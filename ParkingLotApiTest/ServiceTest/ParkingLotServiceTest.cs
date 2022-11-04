@@ -3,6 +3,8 @@ using ParkingLotApi.Dtos;
 using System.Linq;
 using System.Threading.Tasks;
 using ParkingLotApi.Exceptions;
+using System.Net.Http;
+using ParkingLotApi.Models;
 
 namespace ParkingLotApiTest.ServiceTest
 {
@@ -61,6 +63,64 @@ namespace ParkingLotApiTest.ServiceTest
             // then
             await Assert.ThrowsAsync<NotFoundParkingLotException>(() => _parkingLotService.DeleteParkingLot(parkingLotId));
         }
+
+        [Fact]
+        public async void Should_return_a_page_of_parking_lots_when_get_a_page_number()
+        {
+            // given
+            
+            for (int i = 0; i < 20; i++)
+            {
+                var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
+                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await _parkingLotContext.SaveChangesAsync();
+            }
+            
+            // when
+            var parkingLots = await _parkingLotService.GetParkingLotsByPageNumber(1);
+
+            // then
+            Assert.Equal(15, parkingLots.Count);
+            Assert.True(parkingLots[0].Capacity < parkingLots[1].Capacity);
+            Assert.True(parkingLots[0].Capacity < parkingLots[14].Capacity);
+        }
+
+        [Fact]
+        public async void Should_return_all_parking_lot_when_this_page_has_no_more_than_15_parking_lot()
+        {
+            // given
+            for (int i = 0; i < 20; i++)
+            {
+                var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
+                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await _parkingLotContext.SaveChangesAsync();
+            }
+
+            // when
+            var parkingLots = await _parkingLotService.GetParkingLotsByPageNumber(2);
+
+            // then
+            Assert.Equal(5, parkingLots.Count);
+        }
+
+        [Fact]
+        public async void Should_return_empty_when_get_a_page_number_out_of_index()
+        {
+            // given
+            for (int i = 0; i < 20; i++)
+            {
+                var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
+                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+            }
+            await _parkingLotContext.SaveChangesAsync();
+
+            // when
+            var parkingLots = await _parkingLotService.GetParkingLotsByPageNumber(3);
+
+            // then
+            Assert.Empty(parkingLots);
+        }
+
 
 
     }

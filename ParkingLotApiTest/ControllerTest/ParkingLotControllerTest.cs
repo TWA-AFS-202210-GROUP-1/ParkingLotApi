@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using ParkingLotApi.Dtos;
 using System.Net.Http.Json;
@@ -24,7 +25,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_delete_parking_lot_when_delete_parkingLot_given_a_exitst_id()
+        public async Task Should_delete_parking_lot_when_delete_parkingLot_given_a_exist_id()
         {
             // given
             var parkingLot = new ParkingLotDto("Best ParkingLot", 100, "11th Street");
@@ -36,6 +37,24 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             Assert.Equal(HttpStatusCode.NoContent, deletedParkingLotResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_a_page_of_parking_lots_when_get_a_page_number()
+        {
+            // given
+            var parkingLot = new ParkingLotDto("Best ParkingLot", 100, "11th Street");
+            for (int i = 0; i < 20; i++)
+            {
+                await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
+            }
+
+            // when
+            var parkingLotsInPageResponse = await _httpClient.GetAsync("/api/ParkingLots?pageNumber=1");
+            var parkingLotsInPage = await GetObjectFromHttpResponse<List<CreatedParkingLotDto>>(parkingLotsInPageResponse);
+
+            // then
+            Assert.Equal(15, parkingLotsInPage.Count);
         }
     }
 }

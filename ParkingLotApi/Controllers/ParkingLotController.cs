@@ -1,3 +1,4 @@
+using System;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 namespace ParkingLotApi.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 [ApiController]
 [Route("api/ParkingLots")]
@@ -29,5 +31,12 @@ public class ParkingLotController : ControllerBase
     {
         await _service.DeleteParkingLot(parkingLotId);
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetParkingLotsByPageNumber([FromQuery] [Range(1, int.MaxValue)] int pageNumber)
+    {
+        var pages = await _service.GetParkingLotsByPageNumber(pageNumber);
+        return Ok(pages);
     }
 }
