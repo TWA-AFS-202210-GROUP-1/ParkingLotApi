@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class HelloController : ControllerBase
 {
-    [HttpGet]
-    public string Get()
-    {
-        return "Hello World";
-    }
+  [HttpGet]
+  public string Get()
+  {
+    return "Hello World";
+  }
 }

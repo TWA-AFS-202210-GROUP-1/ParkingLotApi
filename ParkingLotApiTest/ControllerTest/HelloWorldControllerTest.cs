@@ -4,23 +4,23 @@ using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
 {
-    using Microsoft.AspNetCore.Mvc.Testing;
+  using Microsoft.AspNetCore.Mvc.Testing;
 
-    public class HelloWorldControllerTest
+  public class HelloWorldControllerTest
+  {
+    public HelloWorldControllerTest()
     {
-        public HelloWorldControllerTest()
-        {
-        }
-
-        [Fact]
-        public async Task Should_get_hello_world()
-        {
-            var factory = new WebApplicationFactory<Program>();
-            var client = factory.CreateClient();
-            var allCompaniesResponse = await client.GetAsync("/Hello");
-            var responseBody = await allCompaniesResponse.Content.ReadAsStringAsync();
-
-            Assert.Equal("Hello World", responseBody);
-        }
     }
+
+    [Fact]
+    public async Task Should_get_hello_world()
+    {
+      var factory = new WebApplicationFactory<Program>();
+      var client = factory.CreateClient();
+      var allCompaniesResponse = await client.GetAsync("/Hello");
+      var responseBody = await allCompaniesResponse.Content.ReadAsStringAsync();
+
+      Assert.Equal("Hello World", responseBody);
+    }
+  }
 }
