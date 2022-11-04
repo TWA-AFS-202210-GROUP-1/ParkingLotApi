@@ -25,7 +25,7 @@ namespace ParkingLotApi.Dtos
             PlateNumber = entity.PlateNumber;
             CreateTime = entity.CreateTime;
             CloseTime =  entity.CloseTime;
-            OrderStatus = OrderStatus.Open;
+            OrderStatus = entity.Status;
         }
     }
 }

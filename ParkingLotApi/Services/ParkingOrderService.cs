@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
@@ -16,7 +17,6 @@ public class ParkingOrderService :IParkingOrderService
     }
     public async Task<ParkingOrderDto> CreateParkingOrder(CreateParkingOrderDto createParkingOrderDto)
     {
-        var parkingOrderEntity = createParkingOrderDto.ToEntity();
         var foundParkingLotEntity = await _context.ParkingLots.Include(_ => _.Orders).FirstOrDefaultAsync(_ => _.Id.Equals(createParkingOrderDto.ParkingLotId));
         if (foundParkingLotEntity == null)
         {
@@ -30,8 +30,25 @@ public class ParkingOrderService :IParkingOrderService
             throw new FullParkingLotException($"The parking lot is full.");
 
         }
+        var parkingOrderEntity = createParkingOrderDto.ToEntity();
         foundParkingLotEntity.Orders.Add(parkingOrderEntity);
         await _context.SaveChangesAsync();
         return new ParkingOrderDto(parkingOrderEntity, foundParkingLotEntity.Name);
+    }
+
+    public async Task<ParkingOrderDto> UpdateOrderStatus(int orderId, UpdateParkingOrderDto updateParkingOrderDto)
+    {
+        var parkingOrderEntity = await _context.ParkingOrders.FirstOrDefaultAsync(_ => _.Id.Equals(orderId));
+        if (parkingOrderEntity == null)
+        {
+            throw new NotFoundEntityException(
+                $"Can not find parking order with id: {orderId}");
+        }
+        updateParkingOrderDto.UpdateEntity(parkingOrderEntity);
+        await _context.SaveChangesAsync();
+        var correlatedLot = await _context.ParkingLots
+            .Include(_=>_.Orders)
+            .FirstOrDefaultAsync(parkingLot => parkingLot.Orders.Any(order => order.Id.Equals(orderId)));
+        return new ParkingOrderDto(parkingOrderEntity, correlatedLot.Name);
     }
 }
