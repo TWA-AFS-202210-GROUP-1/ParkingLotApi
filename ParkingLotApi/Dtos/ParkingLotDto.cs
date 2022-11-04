@@ -2,38 +2,20 @@ using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Dtos;
 
-public class ParkingLotDto
+public class ParkingLotDto : CreateParkingLotDto
 {
-    public string Name { get; set; }
-    public int Capacity { get; set; }
-    public string Location { get; set; }
-
     public ParkingLotDto()
     {
-
+        
     }
-
-    public ParkingLotDto(string name, int capacity, string location)
-    {
-        Name = name;
-        Capacity = capacity;
-        Location = location;
-    }
-
+ 
     public ParkingLotDto(ParkingLotEntity parkingLotEntity)
     {
+        Id = parkingLotEntity.Id;
         Name = parkingLotEntity.Name;
         Capacity = parkingLotEntity.Capacity;
         Location = parkingLotEntity.Location;
     }
 
-    public ParkingLotEntity ToEntity()
-    {
-        return new ParkingLotEntity()
-        {
-            Name = Name,
-            Capacity = Capacity,
-            Location = Location,
-        };
-    }
+    public int Id { get; set; }
 }

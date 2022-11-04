@@ -17,7 +17,7 @@ namespace ParkingLotApi.Services
         {
             _context = context;
         }
-        public async Task<CreatedParkingLotDto> CreateParkingLot(ParkingLotDto parkingLot)
+        public async Task<ParkingLotDto> CreateParkingLot(CreateParkingLotDto parkingLot)
         {
             if (parkingLot.Capacity < 0)
             {
@@ -27,7 +27,7 @@ namespace ParkingLotApi.Services
             await _context.ParkingLots.AddAsync(parkingLotEntity);
             await _context.SaveChangesAsync();
 
-            return new CreatedParkingLotDto(parkingLotEntity);
+            return new ParkingLotDto(parkingLotEntity);
         }
 
         public async Task DeleteParkingLot(int parkingLotId)
@@ -55,6 +55,17 @@ namespace ParkingLotApi.Services
                 .OrderBy(_ => _.Id)
                 .Select(_ => new ParkingLotDto(_))
                 .ToList();
+        }
+
+        public async Task<ParkingLotDto> GetParkingLotById(int parkingLotId)
+        {
+            var foundEntity = await _context.ParkingLots.FirstOrDefaultAsync(_ => _.Id.Equals(parkingLotId));
+            if (foundEntity == null)
+            {
+                throw new NotFoundParkingLotException($"Can not find a parking lot with id : {parkingLotId}");
+            }
+
+            return new ParkingLotDto(foundEntity);
         }
 
         private bool IsPageOutOfIndex(int pageNumber, List<ParkingLotEntity> allEntities)
