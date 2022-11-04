@@ -19,7 +19,7 @@ namespace ParkingLotApiTest.ControllerTest
     }
 
     [Fact]
-    public async Task Should_create_parking_lot_when_post()
+    public async void Should_create_parking_lot_when_post()
     {
       // given
       var httpClient = GetHttpClient();
@@ -31,6 +31,8 @@ namespace ParkingLotApiTest.ControllerTest
 
       // then
       Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+      var idString = await response.Content.ReadAsStringAsync();
+      Assert.Equal(1, int.Parse(idString));
     }
   }
 }
