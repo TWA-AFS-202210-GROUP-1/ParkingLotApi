@@ -1,4 +1,6 @@
-﻿namespace ParkingLotApi.Models;
+﻿using ParkingLotApi.Dtos;
+
+namespace ParkingLotApi.Models;
 
 public class ParkingLotEntity
 {
@@ -9,5 +11,12 @@ public class ParkingLotEntity
 
     public ParkingLotEntity()
     {
+    }
+
+    public void UpdateEntityByDto(CreateOrUpdateParkingLotDto newParkingLot)
+    {
+        Name = newParkingLot.Name;
+        Capacity = newParkingLot.Capacity;
+        Location = newParkingLot.Location;
     }
 }

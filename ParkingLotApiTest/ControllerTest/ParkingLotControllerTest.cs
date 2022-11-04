@@ -12,7 +12,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_created_parking_lot_when_post_new_parking_lot()
         {
             // given
-            var parkingLot = new CreateParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 100, "11th Street");
             
             // when
             var createdParkingLotResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
@@ -28,7 +28,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_delete_parking_lot_when_delete_parkingLot_given_a_exist_id()
         {
             // given
-            var parkingLot = new CreateParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 100, "11th Street");
             var createdParkingLotResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
             var createdParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(createdParkingLotResponse);
 
@@ -43,7 +43,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_a_page_of_parking_lots_when_get_a_page_number()
         {
             // given
-            var parkingLot = new CreateParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 100, "11th Street");
             for (int i = 0; i < 20; i++)
             {
                 await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
@@ -61,7 +61,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_a_parking_lot_when_get_by_id_give_a_existed_id()
         {
             // given
-            var parkingLot = new CreateParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 100, "11th Street");
             var createdResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
             var createdParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(createdResponse);
 
@@ -74,6 +74,27 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(createdParkingLot.Name, foundParkingLot.Name);
             Assert.Equal(createdParkingLot.Capacity, foundParkingLot.Capacity);
             Assert.Equal(createdParkingLot.Location, foundParkingLot.Location);
+        }
+
+        [Fact]
+        public async Task Should_return_a_updated_parking_lot_when_update_parking_lot_given_a_valid_dto()
+        {
+            // given
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var createdResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
+            var createdParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(createdResponse);
+
+            var newParkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 200, "12th Street");
+
+            // when
+            var updatedResponse = await _httpClient.PutAsJsonAsync($"/api/ParkingLots/{createdParkingLot.Id}", newParkingLot);
+            var updatedParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(updatedResponse);
+
+            // then
+            Assert.Equal(createdParkingLot.Id, updatedParkingLot.Id);
+            Assert.Equal(createdParkingLot.Name, updatedParkingLot.Name);
+            Assert.Equal(200, updatedParkingLot.Capacity);
+            Assert.Equal("12th Street", updatedParkingLot.Location);
         }
     }
 }

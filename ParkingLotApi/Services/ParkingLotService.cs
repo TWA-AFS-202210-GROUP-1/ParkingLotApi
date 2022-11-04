@@ -17,13 +17,13 @@ namespace ParkingLotApi.Services
         {
             _context = context;
         }
-        public async Task<ParkingLotDto> CreateParkingLot(CreateParkingLotDto parkingLot)
+        public async Task<ParkingLotDto> CreateParkingLot(CreateOrUpdateParkingLotDto orUpdateParkingLot)
         {
-            if (parkingLot.Capacity < 0)
+            if (orUpdateParkingLot.Capacity < 0)
             {
                 throw new InvalidParkingLotDtoException("Capacity cannot be minus.");
             }
-            var parkingLotEntity = parkingLot.ToEntity();
+            var parkingLotEntity = orUpdateParkingLot.ToEntity();
             await _context.ParkingLots.AddAsync(parkingLotEntity);
             await _context.SaveChangesAsync();
 
@@ -64,6 +64,26 @@ namespace ParkingLotApi.Services
             {
                 throw new NotFoundParkingLotException($"Can not find a parking lot with id : {parkingLotId}");
             }
+
+            return new ParkingLotDto(foundEntity);
+        }
+
+        public async Task<ParkingLotDto> UpdateParkingLotById(int parkingLotId, CreateOrUpdateParkingLotDto newParkingLot)
+        {
+            var foundEntity = await _context.ParkingLots.FirstOrDefaultAsync(_ => _.Id.Equals(parkingLotId));
+            if (foundEntity == null)
+            {
+                throw new NotFoundParkingLotException($"Can not find a parking lot with id : {parkingLotId}");
+            }
+
+            if (foundEntity.Capacity > newParkingLot.Capacity)
+            {
+                throw new ForbidUpdateParkingLotException("Capacity can only be increased, not decreased.");
+            }
+
+            foundEntity.UpdateEntityByDto(newParkingLot);
+            await _context.SaveChangesAsync();
+
 
             return new ParkingLotDto(foundEntity);
         }

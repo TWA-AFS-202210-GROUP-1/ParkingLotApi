@@ -2,7 +2,7 @@ using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Dtos;
 
-public class ParkingLotDto : CreateParkingLotDto
+public class ParkingLotDto : CreateOrUpdateParkingLotDto
 {
     public ParkingLotDto()
     {

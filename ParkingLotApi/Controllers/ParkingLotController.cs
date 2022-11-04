@@ -20,9 +20,9 @@ public class ParkingLotController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateParkingLot([FromBody] CreateParkingLotDto parkingLot)
+    public async Task<IActionResult> CreateParkingLot([FromBody] CreateOrUpdateParkingLotDto orUpdateParkingLot)
     {
-        var createdParkingLot = await _service.CreateParkingLot(parkingLot);
+        var createdParkingLot = await _service.CreateParkingLot(orUpdateParkingLot);
         return Created($"api/ParkingLot/{createdParkingLot.Id}", createdParkingLot);
     }
 
@@ -44,6 +44,13 @@ public class ParkingLotController : ControllerBase
     public async Task<IActionResult> GetParkingLotById([FromRoute] int parkingLotId)
     {
         var foundParkingLot = await _service.GetParkingLotById(parkingLotId);
+        return Ok(foundParkingLot);
+    }
+
+    [HttpPut("{parkingLotId}")]
+    public async Task<IActionResult> UpdateParkingLotById([FromRoute] int parkingLotId, [FromBody] CreateOrUpdateParkingLotDto newParkingLot)
+    {
+        var foundParkingLot = await _service.UpdateParkingLotById(parkingLotId, newParkingLot);
         return Ok(foundParkingLot);
     }
 }
