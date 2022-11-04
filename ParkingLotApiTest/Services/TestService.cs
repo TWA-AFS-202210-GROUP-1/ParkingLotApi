@@ -33,6 +33,21 @@ namespace ParkingLotApiTest.Services
       return requestBodyList;
     }
 
+    public static async Task<T?> DeserializeResponseContent<T>(HttpResponseMessage response)
+    {
+      if (response.Content != null)
+      {
+        var responseBody = await response.Content.ReadAsStringAsync();
+        var deserializedObject = JsonConvert.DeserializeObject<T>(responseBody);
+
+        return deserializedObject;
+      }
+      else
+      {
+        return default;
+      }
+    }
+
     public static async Task PostDtoList<T>(HttpClient httpClient, string uri, List<T> requestDtoList)
     {
       var requestBodyList = SerializeDtoList(requestDtoList);

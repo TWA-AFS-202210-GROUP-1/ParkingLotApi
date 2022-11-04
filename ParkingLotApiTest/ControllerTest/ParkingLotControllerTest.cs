@@ -49,10 +49,9 @@ namespace ParkingLotApiTest.ControllerTest
 
       // then
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-      var responseBody = await response.Content.ReadAsStringAsync();
-      var deserializeObject = JsonConvert.DeserializeObject<List<ParkingLotDto>>(responseBody);
-      Assert.Equal(parkingLotDtos.Count, deserializeObject.Count);
-      Assert.Equal(parkingLotDtos[0].ToString(), deserializeObject[0].ToString());
+      var returnedDtos = await TestService.DeserializeResponseContent<List<ParkingLotDto>>(response);
+      Assert.Equal(parkingLotDtos.Count, returnedDtos?.Count);
+      Assert.Equal(parkingLotDtos[0].ToString(), returnedDtos?[0].ToString());
     }
   }
 }
