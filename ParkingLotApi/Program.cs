@@ -16,7 +16,7 @@ public partial class Program
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddDbContext<ParkingLotContext>(options =>
+    builder.Services.AddDbContext<ParkingLotDbContext>(options =>
     {
       var connectionString = builder.Configuration.GetConnectionString("Default");
       options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -25,12 +25,14 @@ public partial class Program
 
     using (var scope = app.Services.CreateScope())
     {
-      var dbContext = scope.ServiceProvider.GetRequiredService<ParkingLotContext>();
-
-      if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
-      {
-        dbContext.Database.Migrate();
-      }
+      var dbContext = scope.ServiceProvider.GetRequiredService<ParkingLotDbContext>();
+      using var context = scope.ServiceProvider.GetService<ParkingLotDbContext>();
+      context.Database.EnsureDeleted();
+      context.Database.EnsureCreated();
+      //if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
+      //{
+      //  dbContext.Database.Migrate();
+      //}
     }
 
     // Configure the HTTP request pipeline.
