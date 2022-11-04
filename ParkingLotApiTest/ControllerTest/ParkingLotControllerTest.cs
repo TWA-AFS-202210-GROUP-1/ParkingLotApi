@@ -4,6 +4,7 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
+using ParkingLotApiTest.Service;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
@@ -11,9 +12,9 @@ using System.Text;
 
 namespace ParkingLotApiTest.ControllerTest
 {
-  public class ParkingLotControllerTest
+  public class ParkingLotControllerTest : TestBase
   {
-    public ParkingLotControllerTest()
+    public ParkingLotControllerTest(CustomWebApplicationFactory<Program> factory) : base(factory)
     {
     }
 
@@ -21,23 +22,15 @@ namespace ParkingLotApiTest.ControllerTest
     public async Task Should_create_parking_lot_when_post()
     {
       // given
-      var factory = new WebApplicationFactory<Program>();
-      var client = factory.CreateClient();
-      ParkingLotDto parkingLotDto = new ParkingLotDto
-      {
-        Name = "ParkXpert",
-        Capacity = 10,
-        Location = "Aaron's Hill, Surrey",
-      };
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareTestParkingLots();
+      var requestBody = TestService.SerializeDto(parkingLotDtos[0]);
 
       // when
-      var httpContent = JsonConvert.SerializeObject(parkingLotDto);
-      var content = new StringContent(httpContent, Encoding.UTF8, "application/json");
-      var allCompaniesResponse = await client.PostAsync("/parking-lots", content);
-      var responseBody = await allCompaniesResponse.Content.ReadAsStringAsync();
+      var response = await httpClient.PostAsync("/parking-lots", requestBody);
 
       // then
-      Assert.Equal(HttpStatusCode.Created, allCompaniesResponse.StatusCode);
+      Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
   }
 }
