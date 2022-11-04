@@ -23,4 +23,11 @@ public class ParkingLotController : ControllerBase
         var createdParkingLot = await _service.CreateParkingLot(parkingLot);
         return Created($"api/ParkingLot/{createdParkingLot.Id}", createdParkingLot);
     }
+
+    [HttpDelete("{parkingLotId}")]
+    public async Task<IActionResult> DeleteParkingLot([FromRoute] int parkingLotId)
+    {
+        await _service.DeleteParkingLot(parkingLotId);
+        return NoContent();
+    }
 }

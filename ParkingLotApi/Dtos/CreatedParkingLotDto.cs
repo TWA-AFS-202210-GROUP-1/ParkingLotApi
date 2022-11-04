@@ -4,6 +4,11 @@ namespace ParkingLotApi.Dtos;
 
 public class CreatedParkingLotDto : ParkingLotDto
 {
+    public CreatedParkingLotDto()
+    {
+        
+    }
+ 
     public CreatedParkingLotDto(ParkingLotEntity parkingLotEntity)
     {
         Id = parkingLotEntity.Id;

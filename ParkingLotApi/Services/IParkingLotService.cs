@@ -6,4 +6,5 @@ namespace ParkingLotApi.Services;
 public interface IParkingLotService
 {
     Task<CreatedParkingLotDto> CreateParkingLot(ParkingLotDto parkingLot);
+    Task DeleteParkingLot(int parkingLotId);
 }

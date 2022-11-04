@@ -2,6 +2,7 @@
 using ParkingLotApi.Exceptions;
 using ParkingLotApi.Repository;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ParkingLotApi.Services
 {
@@ -16,13 +17,24 @@ namespace ParkingLotApi.Services
         {
             if (parkingLot.Capacity < 0)
             {
-                throw new ParkingLotDtoInvalidException("Capacity cannot be minus.");
+                throw new InvalidParkingLotDtoException("Capacity cannot be minus.");
             }
             var parkingLotEntity = parkingLot.ToEntity();
             await _context.ParkingLots.AddAsync(parkingLotEntity);
             await _context.SaveChangesAsync();
 
             return new CreatedParkingLotDto(parkingLotEntity);
+        }
+
+        public async Task DeleteParkingLot(int parkingLotId)
+        {
+            var foundEntity = await _context.ParkingLots.FirstOrDefaultAsync(_ => _.Id.Equals(parkingLotId));
+            if (foundEntity == null)
+            {
+                throw new NotFoundParkingLotException($"Can not find a parking lot with id : {parkingLotId}");
+            }
+            _context.ParkingLots.Remove(foundEntity);
+            await _context.SaveChangesAsync();
         }
     }
 }

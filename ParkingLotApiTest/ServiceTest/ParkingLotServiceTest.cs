@@ -27,14 +27,39 @@ namespace ParkingLotApiTest.ServiceTest
         }
 
         [Fact]
-        public async void Should_throw_ParkingLotDtoInvalidException_when_give_a_invalid_dto()
+        public async void Should_throw_InvalidParkingLotDtoException_when_give_a_invalid_dto()
         {
             // given
             var parkingLotDto = new ParkingLotDto("name", -1, "location");
 
             // when
             // then
-            await Assert.ThrowsAsync<ParkingLotDtoInvalidException>(() => _parkingLotService.CreateParkingLot(parkingLotDto));
+            await Assert.ThrowsAsync<InvalidParkingLotDtoException>(() => _parkingLotService.CreateParkingLot(parkingLotDto));
+        }
+
+        [Fact]
+        public async void Should_delete_parking_lot_when_give_a_existed_id()
+        {
+            // given
+            var parkingLotDto = new ParkingLotDto("name", 10, "location");
+
+            // when
+            var createdParkingLotDto = await _parkingLotService.CreateParkingLot(parkingLotDto);
+            await _parkingLotService.DeleteParkingLot(createdParkingLotDto.Id);
+            var parkingLotEntities = _parkingLotContext.ParkingLots.ToList();
+
+            // then
+            Assert.Empty(parkingLotEntities);
+        }
+
+        [Fact]
+        public async void Should_throw_NoFoundParkingLotDtoException_when_give_a_not_existed_id()
+        {
+            // given
+            var parkingLotId = 1000;
+            // when
+            // then
+            await Assert.ThrowsAsync<NotFoundParkingLotException>(() => _parkingLotService.DeleteParkingLot(parkingLotId));
         }
 
 
