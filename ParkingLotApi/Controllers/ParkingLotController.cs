@@ -28,9 +28,11 @@ namespace ParkingLotApi.Controllers
     }
 
     [HttpGet]
-    public string Get()
+    public IActionResult GetAll()
     {
-      return "Hello World";
+      var parkingLotDtos = parkingLotService.GetAll();
+
+      return Ok(parkingLotDtos);
     }
   }
 }

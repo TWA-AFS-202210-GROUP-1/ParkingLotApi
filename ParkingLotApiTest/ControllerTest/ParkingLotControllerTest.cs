@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
+using System.Collections.Generic;
 
 namespace ParkingLotApiTest.ControllerTest
 {
@@ -33,6 +34,25 @@ namespace ParkingLotApiTest.ControllerTest
       Assert.Equal(HttpStatusCode.Created, response.StatusCode);
       var idString = await response.Content.ReadAsStringAsync();
       Assert.Equal(1, int.Parse(idString));
+    }
+
+    [Fact]
+    public async void Should_get_all_parking_lots_when_get_given_multiple_parking_lots()
+    {
+      // given
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareTestParkingLots();
+      await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
+
+      // when
+      var response = await httpClient.GetAsync("/parking-lots");
+
+      // then
+      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      var responseBody = await response.Content.ReadAsStringAsync();
+      var deserializeObject = JsonConvert.DeserializeObject<List<ParkingLotDto>>(responseBody);
+      Assert.Equal(parkingLotDtos.Count, deserializeObject.Count);
+      Assert.Equal(parkingLotDtos[0].ToString(), deserializeObject[0].ToString());
     }
   }
 }

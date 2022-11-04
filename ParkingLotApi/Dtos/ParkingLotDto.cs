@@ -1,11 +1,13 @@
 ﻿using ParkingLotApi.Models;
-using System.Text.Json.Serialization;
 
 namespace ParkingLotApi.Dtos
 {
   public class ParkingLotDto
   {
-    [JsonConstructor]
+    public ParkingLotDto()
+    {
+    }
+
     public ParkingLotDto(string name, int capacity, string location)
     {
       Name = name;
@@ -20,11 +22,11 @@ namespace ParkingLotApi.Dtos
       Location = parkingLotEntity.Location;
     }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public int Capacity { get; set; }
 
-    public string Location { get; set; }
+    public string Location { get; set; } = string.Empty;
 
     public ParkingLotEntity ToEntity()
     {
@@ -34,6 +36,11 @@ namespace ParkingLotApi.Dtos
         Capacity = Capacity,
         Location = Location,
       };
+    }
+
+    public override string ToString()
+    {
+      return $"Name: {Name}\r\nCapacity: {Capacity}\r\nLocation: {Location}";
     }
   }
 }

@@ -1,5 +1,7 @@
 ﻿using ParkingLotApi.Dtos;
 using ParkingLotApi.Repository;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ParkingLotApi.Services
@@ -20,6 +22,13 @@ namespace ParkingLotApi.Services
       await parkingLotDbContext.SaveChangesAsync();
 
       return parkingLotEntity.Id;
+    }
+
+    public List<ParkingLotDto> GetAll()
+    {
+      var parkingLots = parkingLotDbContext.ParkingLots.ToList();
+
+      return parkingLots.Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity)).ToList();
     }
   }
 }
