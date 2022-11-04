@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Services;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -11,21 +12,19 @@ namespace ParkingLotApi.Controllers
   [Route("parking-lots")]
   public class ParkingLotController : ControllerBase
   {
-    private readonly ParkingLotDbContext parkingLotDbContext;
+    private readonly ParkingLotService parkingLotService;
 
-    public ParkingLotController(ParkingLotDbContext parkingLotDbContext)
+    public ParkingLotController(ParkingLotService parkingLotService)
     {
-      this.parkingLotDbContext = parkingLotDbContext;
+      this.parkingLotService = parkingLotService;
     }
 
     [HttpPost]
     public async Task<IActionResult> AddParkingLot(ParkingLotDto parkingLotDto)
     {
-      var parkingLotEntity = parkingLotDto.ToEntity();
-      var s = await parkingLotDbContext.ParkingLots.AddAsync(parkingLotEntity);
-      await parkingLotDbContext.SaveChangesAsync();
+      var id = await parkingLotService.AddParkingLot(parkingLotDto);
 
-      return Created($"/parking-lots", parkingLotEntity.Id);
+      return Created("/parking-lots", id);
     }
 
     [HttpGet]

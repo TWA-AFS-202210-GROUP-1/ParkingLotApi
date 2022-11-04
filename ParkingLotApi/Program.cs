@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Services;
 
 public partial class Program
 {
@@ -16,6 +17,9 @@ public partial class Program
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    //builder.Services.AddScoped<IParkingLotService, ParkingLotService>();
+    builder.Services.AddScoped<ParkingLotService>();
+
     builder.Services.AddDbContext<ParkingLotDbContext>(options =>
     {
       var connectionString = builder.Configuration.GetConnectionString("Default");

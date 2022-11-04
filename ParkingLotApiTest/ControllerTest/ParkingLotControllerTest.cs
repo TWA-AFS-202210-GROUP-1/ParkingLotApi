@@ -4,7 +4,7 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
-using ParkingLotApiTest.Service;
+using ParkingLotApiTest.Services;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
