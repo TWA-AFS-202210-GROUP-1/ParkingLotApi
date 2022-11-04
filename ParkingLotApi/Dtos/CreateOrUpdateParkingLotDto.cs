@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Dtos;
@@ -34,6 +35,7 @@ public class CreateOrUpdateParkingLotDto
             Name = Name,
             Capacity = Capacity,
             Location = Location,
+            Orders = new List<ParkingOrderEntity>()
         };
     }
 }

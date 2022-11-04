@@ -7,22 +7,20 @@ namespace ParkingLotApiTest.ServiceTest
 {
     public class ServiceTestBase : IDisposable
     {
-        protected readonly ParkingLotService _parkingLotService;
-        protected readonly ParkingLotContext _parkingLotContext;
+        protected readonly ParkingLotContext ParkingLotContext;
         public ServiceTestBase()
         {
             var options = new DbContextOptionsBuilder<ParkingLotContext>()
                 .UseInMemoryDatabase(databaseName: "TestDB")
                 .Options;
 
-            _parkingLotContext = new ParkingLotContext(options);
-            _parkingLotService = new ParkingLotService(_parkingLotContext);
+            ParkingLotContext = new ParkingLotContext(options);
         }
 
         public void Dispose()
         {
-            _parkingLotContext.ParkingLots.RemoveRange(_parkingLotContext.ParkingLots);
-            _parkingLotContext.SaveChanges();
+            ParkingLotContext.ParkingLots.RemoveRange(ParkingLotContext.ParkingLots);
+            ParkingLotContext.SaveChanges();
         }
     }
 }

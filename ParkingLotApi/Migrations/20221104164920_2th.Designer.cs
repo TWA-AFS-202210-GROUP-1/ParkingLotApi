@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParkingLotApi.Repository;
 
@@ -10,9 +11,10 @@ using ParkingLotApi.Repository;
 namespace ParkingLotApi.Migrations
 {
     [DbContext(typeof(ParkingLotContext))]
-    partial class ParkingLotContextModelSnapshot : ModelSnapshot
+    [Migration("20221104164920_2th")]
+    partial class _2th
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +55,7 @@ namespace ParkingLotApi.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("ParkingLotEntityId")
+                    b.Property<int>("ParkingLotId")
                         .HasColumnType("int");
 
                     b.Property<string>("PlateNumber")
@@ -65,16 +67,20 @@ namespace ParkingLotApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParkingLotEntityId");
+                    b.HasIndex("ParkingLotId");
 
                     b.ToTable("ParkingOrders");
                 });
 
             modelBuilder.Entity("ParkingLotApi.Models.ParkingOrderEntity", b =>
                 {
-                    b.HasOne("ParkingLotApi.Models.ParkingLotEntity", null)
+                    b.HasOne("ParkingLotApi.Models.ParkingLotEntity", "ParkingLot")
                         .WithMany("Orders")
-                        .HasForeignKey("ParkingLotEntityId");
+                        .HasForeignKey("ParkingLotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParkingLot");
                 });
 
             modelBuilder.Entity("ParkingLotApi.Models.ParkingLotEntity", b =>

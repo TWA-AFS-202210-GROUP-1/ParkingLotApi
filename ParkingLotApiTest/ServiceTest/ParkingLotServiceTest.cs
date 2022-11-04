@@ -5,11 +5,20 @@ using System.Threading.Tasks;
 using ParkingLotApi.Exceptions;
 using System.Net.Http;
 using ParkingLotApi.Models;
+using ParkingLotApi.Services;
+using ParkingLotApi.Repository;
 
 namespace ParkingLotApiTest.ServiceTest
 {
+    [Collection("ServiceTest")]
     public class ParkingLotServiceTest : ServiceTestBase
     {
+        protected readonly ParkingLotService _parkingLotService;
+        public ParkingLotServiceTest()
+        {
+            _parkingLotService = new ParkingLotService(ParkingLotContext);
+        }
+
         [Fact]
         public async void Should_create_parking_lot_when_give_a_valid_dto()
         {
@@ -18,7 +27,7 @@ namespace ParkingLotApiTest.ServiceTest
 
             // when
             var createdParkingLotDto = await _parkingLotService.CreateParkingLot(parkingLotDto);
-            var parkingLotEntities = _parkingLotContext.ParkingLots.ToList();
+            var parkingLotEntities = ParkingLotContext.ParkingLots.ToList();
 
             // then
 
@@ -44,12 +53,12 @@ namespace ParkingLotApiTest.ServiceTest
         {
             // given
             var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = 10, Location = "location" };
-            await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-            await _parkingLotContext.SaveChangesAsync();
+            await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+            await ParkingLotContext.SaveChangesAsync();
 
             // when
             await _parkingLotService.DeleteParkingLot(parkingLotEntity.Id);
-            var parkingLotEntities = _parkingLotContext.ParkingLots.ToList();
+            var parkingLotEntities = ParkingLotContext.ParkingLots.ToList();
 
             // then
             Assert.Empty(parkingLotEntities);
@@ -62,7 +71,7 @@ namespace ParkingLotApiTest.ServiceTest
             var parkingLotId = 1000;
             // when
             // then
-            await Assert.ThrowsAsync<NotFoundParkingLotException>(() => _parkingLotService.DeleteParkingLot(parkingLotId));
+            await Assert.ThrowsAsync<NotFoundEntityException>(() => _parkingLotService.DeleteParkingLot(parkingLotId));
         }
 
         [Fact]
@@ -73,8 +82,8 @@ namespace ParkingLotApiTest.ServiceTest
             for (int i = 0; i < 20; i++)
             {
                 var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
-                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-                await _parkingLotContext.SaveChangesAsync();
+                await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await ParkingLotContext.SaveChangesAsync();
             }
             
             // when
@@ -93,8 +102,8 @@ namespace ParkingLotApiTest.ServiceTest
             for (int i = 0; i < 20; i++)
             {
                 var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
-                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-                await _parkingLotContext.SaveChangesAsync();
+                await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await ParkingLotContext.SaveChangesAsync();
             }
 
             // when
@@ -111,8 +120,8 @@ namespace ParkingLotApiTest.ServiceTest
             for (int i = 0; i < 20; i++)
             {
                 var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = i, Location = "location" };
-                await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-                await _parkingLotContext.SaveChangesAsync();
+                await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await ParkingLotContext.SaveChangesAsync();
             }
             
             // when
@@ -127,8 +136,8 @@ namespace ParkingLotApiTest.ServiceTest
         {
             // given
             var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = 100, Location = "location" };
-            await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-            await _parkingLotContext.SaveChangesAsync();
+            await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+            await ParkingLotContext.SaveChangesAsync();
 
             // when
             var parkingLot = await _parkingLotService.GetParkingLotById(parkingLotEntity.Id);
@@ -146,7 +155,7 @@ namespace ParkingLotApiTest.ServiceTest
             var parkingLotId = 1000;
             // when
             // then
-            await Assert.ThrowsAsync<NotFoundParkingLotException>(() => _parkingLotService.GetParkingLotById(parkingLotId));
+            await Assert.ThrowsAsync<NotFoundEntityException>(() => _parkingLotService.GetParkingLotById(parkingLotId));
         }
 
         [Fact]
@@ -154,8 +163,8 @@ namespace ParkingLotApiTest.ServiceTest
         {
             // given
             var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = 100, Location = "location" };
-            await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-            await _parkingLotContext.SaveChangesAsync();
+            await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+            await ParkingLotContext.SaveChangesAsync();
             var newParkingLotDto = new CreateOrUpdateParkingLotDto("name", 200, "location 2");
 
             // when
@@ -179,7 +188,7 @@ namespace ParkingLotApiTest.ServiceTest
             var newParkingLotDto = new CreateOrUpdateParkingLotDto("name", 50, "location 2");
             // when
             // then
-            await Assert.ThrowsAsync<NotFoundParkingLotException>(() => _parkingLotService.UpdateParkingLotById(parkingLotId, newParkingLotDto));
+            await Assert.ThrowsAsync<NotFoundEntityException>(() => _parkingLotService.UpdateParkingLotById(parkingLotId, newParkingLotDto));
         }
 
 
@@ -188,8 +197,8 @@ namespace ParkingLotApiTest.ServiceTest
         {
             // given
             var parkingLotEntity = new ParkingLotEntity() { Name = "name", Capacity = 100, Location = "location" };
-            await _parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-            await _parkingLotContext.SaveChangesAsync();
+            await ParkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+            await ParkingLotContext.SaveChangesAsync();
             var newParkingLotDto = new CreateOrUpdateParkingLotDto("name", 50, "location 2");
 
             // when

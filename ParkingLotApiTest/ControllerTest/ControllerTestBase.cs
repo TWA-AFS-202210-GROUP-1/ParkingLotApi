@@ -47,6 +47,7 @@ public class ControllerTestBase : IDisposable
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<ParkingLotContext>();
 
+        context.ParkingOrders.RemoveRange(context.ParkingOrders);
         context.ParkingLots.RemoveRange(context.ParkingLots);
 
         context.SaveChanges();
