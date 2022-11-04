@@ -1,26 +1,21 @@
+using ParkingLotApi.Dtos;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-using ParkingLotApi;
-using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
 {
-    using Microsoft.AspNetCore.Mvc.Testing;
-
-    public class ParkingLotControllerTest
+    public class ParkingLotControllerTest : ControllerTestBase
     {
-        public ParkingLotControllerTest()
-        {
-        }
-
         [Fact]
-        public async Task Should_get_hello_world()
+        public async Task Should_return_created_parking_lot_when_post_new_parking_lot()
         {
-            var factory = new WebApplicationFactory<Program>();
-            var client = factory.CreateClient();
-            var allCompaniesResponse = await client.GetAsync("/Hello");
-            var responseBody = await allCompaniesResponse.Content.ReadAsStringAsync();
+            var parkingLot = new ParkingLotDto("Best ParkingLot", 100, "11th Street");
+            var createdParkingLotResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
+            var createdParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(createdParkingLotResponse);
 
-            Assert.Equal("Hello World", responseBody);
+            Assert.Equal(parkingLot.Name, createdParkingLot.Name);
+            Assert.Equal(parkingLot.Capacity, parkingLot.Capacity);
+            Assert.Equal(parkingLot.Location, parkingLot.Location);
         }
     }
 }
