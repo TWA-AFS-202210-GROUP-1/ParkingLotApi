@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ParkingLotApi.Consts;
 using ParkingLotApi.Dtos;
 
 namespace ParkingLotApi.Models;
@@ -24,6 +26,6 @@ public class ParkingLotEntity
 
     public bool IsFull()
     {
-        return Orders.Count >= Capacity;
+        return Orders.Where(_ => _.Status.Equals(OrderStatus.Open)).ToList().Count >= Capacity;
     }
 }

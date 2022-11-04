@@ -29,5 +29,23 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal("Best ParkingLot", createdParkingOrder.ParkingLotName);
             Assert.Equal(OrderStatus.Open, createdParkingOrder.OrderStatus);
         }
+
+        [Fact]
+        public async Task Should_return_error_message_when_post_new_parking_order_given_a_full_parking_lot()
+        {
+            // given
+            var parkingLot = new CreateOrUpdateParkingLotDto("Best ParkingLot", 1, "11th Street");
+            var createdParkingLotResponse = await _httpClient.PostAsJsonAsync("/api/ParkingLots", parkingLot);
+            var createdParkingLot = await GetObjectFromHttpResponse<ParkingLotDto>(createdParkingLotResponse);
+            var parkingOrder = new CreateParkingOrderDto(createdParkingLot.Id, "MyPlate");
+            await _httpClient.PostAsJsonAsync("/api/ParkingOrders", parkingOrder);
+
+            // when
+            var createdParkingOrderResponse = await _httpClient.PostAsJsonAsync("/api/ParkingOrders", parkingOrder);
+            var createdParkingOrder = await createdParkingOrderResponse.Content.ReadAsStringAsync();
+
+            // then
+            Assert.Equal("The parking lot is full.", createdParkingOrder);
+        }
     }
 }

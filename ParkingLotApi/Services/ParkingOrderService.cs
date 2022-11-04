@@ -27,7 +27,7 @@ public class ParkingOrderService :IParkingOrderService
 
         if (foundParkingLotEntity.IsFull())
         {
-            throw new FullParkingLotException($"Parking Lot {createParkingOrderDto.ParkingLotId} is full.");
+            throw new FullParkingLotException($"The parking lot is full.");
 
         }
         foundParkingLotEntity.Orders.Add(parkingOrderEntity);
