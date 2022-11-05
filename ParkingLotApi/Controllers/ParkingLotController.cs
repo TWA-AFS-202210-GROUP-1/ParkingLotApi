@@ -82,6 +82,24 @@ namespace ParkingLotApi.Controllers
             return CreatedAtAction(nameof(GetById), new { id = id }, parkinglotDto);
         }
 
+        [HttpPost("{id}/orders")]
+        public async Task<ActionResult<ParkingLotDto>> AddNewOrdertoCompany([FromRoute] int id, OrderDto orderDto)
+        {
+            var parkinglotDto = await this.parkinglotService.GetById(id);
+            if (parkinglotDto.OrderDtos == null)
+            {
+                parkinglotDto.OrderDtos = new List<OrderDto>();
+            }
+
+            if (parkinglotDto.OrderDtos.Count < parkinglotDto.Capacity)
+            {
+                parkinglotDto.OrderDtos.Add(orderDto);
+                return CreatedAtAction(nameof(GetById), new { id = id }, parkinglotDto);
+            }
+
+            return NotFound();
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

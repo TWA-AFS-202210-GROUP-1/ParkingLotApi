@@ -181,33 +181,27 @@ namespace ParkingLotApiTest.ControllerTest
                 Name = "IBM",
                 Capacity = 10,
                 Location = "NYC",
-                OrderDtos = new List<OrderDto>()
-                {
-                    new OrderDto()
-                    {
-                        Ordernumber = 1,
-                        NameofParkinglot = 1,
-                        PlateNumber = "gb123",
-                        CreationTime = "20220102",
-                        CloseTime = "20220301",
-                        Status = true,
-                    },
-                },
             };
 
             // when
             var httpContent = JsonConvert.SerializeObject(parkinglotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             var response = await client.PostAsync("/parkinglots", content);
-            Assert.Equal("Created", response.StatusCode.ToString());
+            var OrderDto = new OrderDto()
+            {
+                Ordernumber = 1,
+                NameofParkinglot = 1,
+                PlateNumber = "gb123",
+                CreationTime = "20220102",
+                CloseTime = "20220301",
+                Status = true,
+            };
+            httpContent = JsonConvert.SerializeObject(OrderDto);
+            content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             // then
-            var allParkinglotsResponse = await client.GetAsync("/parkinglots");
-            var body = await allParkinglotsResponse.Content.ReadAsStringAsync();
-
-            var returnParkinglots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
-
-            Assert.Single(returnParkinglots);
+            var allParkinglotsResponse = await client.PostAsync("/parkinglots/1/orders", content);
+            Assert.Equal("Created", allParkinglotsResponse.StatusCode.ToString());
         }
     }
 }
