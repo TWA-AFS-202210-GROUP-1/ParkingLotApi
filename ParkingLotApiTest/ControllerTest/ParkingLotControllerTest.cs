@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Models;
 using ParkingLotApiTest;
@@ -12,46 +13,27 @@ namespace ParkingLotApi.ControllerTest
     using System.Net.Mime;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Testing;
     using Newtonsoft.Json;
+    using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
     [Collection("SameCollection")]
-    public class ParkingLotControllerTest : TestBase
+    public class ParkingLotControllerTest : ControllerTestBase
     {
         public ParkingLotControllerTest(WebApplicationFactory<Program> factory)
             : base(factory)
         {
         }
 
-        private List<ParkingLotDto> ParkingLotDtos()
-        {
-            var parkingLotDtos = new List<ParkingLotDto>()
-            {
-                new ParkingLotDto()
-                {
-                    Name = "ParkingLot1",
-                    Capacity = 10,
-                    Location = "Beijing",
-                },
-                new ParkingLotDto()
-                {
-                    Name = "ParkingLot2",
-                    Capacity = 20,
-                    Location = "Shanghai",
-                },
-            };
-            return parkingLotDtos;
-        }
-
         [Fact]
         public async Task Should_create_parking_lot_success()
         {
             // given
-            var client = GetClient();
+            var client = this.GetClient();
+            var content = this.ConvertDtoToStringContent(ParkingLotDtos()[0]).Result;
 
             // when
-            var httpContent = JsonConvert.SerializeObject(ParkingLotDtos()[0]);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             await client.PostAsync("/parkingLots", content);
 
             // then
@@ -65,19 +47,14 @@ namespace ParkingLotApi.ControllerTest
         public async Task Should_return_all_parking_lots_success()
         {
             // given
-            var client = GetClient();
+            var client = this.GetClient();
+            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[0]);
+            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[1]);
 
             // when
-            var httpContent = JsonConvert.SerializeObject(ParkingLotDtos()[0]);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PostAsync("/parkingLots", content);
-
-            var httpContent1 = JsonConvert.SerializeObject(ParkingLotDtos()[1]);
-            var content1 = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PostAsync("/parkingLots", content1);
+            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
 
             // then
-            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
             var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
             var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
             Assert.Equal(2, returnParkingLots.Count);
@@ -87,12 +64,10 @@ namespace ParkingLotApi.ControllerTest
         public async Task Should_remove_parking_lot_success()
         {
             // given
-            var client = GetClient();
+            var client = this.GetClient();
+            var response = await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[0]);
 
             // when
-            var httpContent = JsonConvert.SerializeObject(ParkingLotDtos()[0]);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PostAsync("/parkingLots", content);
             await client.DeleteAsync(response.Headers.Location);
 
             // then

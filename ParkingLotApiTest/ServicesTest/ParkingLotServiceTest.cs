@@ -17,39 +17,11 @@ namespace ParkingLotApi.ControllerTest
     using Newtonsoft.Json;
 
     [Collection("SameCollection")]
-    public class ParkingLotServiceTest : TestBase
+    public class ParkingLotServiceTest : ServiceTestBase
     {
         public ParkingLotServiceTest(WebApplicationFactory<Program> factory)
             : base(factory)
         {
-        }
-
-        private ParkingLotContext GetParkingLotContext()
-        {
-            var scope = Factory.Services.CreateScope();
-            var scopedService = scope.ServiceProvider;
-            var context = scopedService.GetRequiredService<ParkingLotContext>();
-            return context;
-        }
-
-        private List<ParkingLotDto> ParkingLotDtos()
-        {
-            var parkingLotDtos = new List<ParkingLotDto>()
-            {
-                new ParkingLotDto()
-                {
-                    Name = "ParkingLot1",
-                    Capacity = 10,
-                    Location = "Beijing",
-                },
-                new ParkingLotDto()
-                {
-                    Name = "ParkingLot2",
-                    Capacity = 20,
-                    Location = "Shanghai",
-                },
-            };
-            return parkingLotDtos;
         }
 
         [Fact]

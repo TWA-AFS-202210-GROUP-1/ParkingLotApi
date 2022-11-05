@@ -3,6 +3,13 @@ using System.Net.Http;
 using System;
 using Microsoft.AspNetCore.Mvc.Testing;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Dtos;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.Net.Mime;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection.Metadata;
 
 namespace ParkingLotApiTest
 {
@@ -25,9 +32,16 @@ namespace ParkingLotApiTest
             context.SaveChanges();
         }
 
-        protected HttpClient GetClient()
+        protected List<ParkingLotDto> ParkingLotDtos()
         {
-            return Factory.CreateClient();
+            var parkingLotDtos = new List<ParkingLotDto>()
+            {
+                new ParkingLotDto("PL1", 10, "Beijing"),
+                new ParkingLotDto("PL2", 20, "Shanghai"),
+                new ParkingLotDto("PL3", 30, "Wuhan"),
+                new ParkingLotDto("PL4", 40, "Tianjin"),
+            };
+            return parkingLotDtos;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Dtos
@@ -7,6 +8,13 @@ namespace ParkingLotApi.Dtos
     {
         public ParkingLotDto()
         {
+        }
+
+        public ParkingLotDto(string name, int capacity, string location)
+        {
+            Name = name;
+            Capacity = capacity;
+            Location = location;
         }
 
         public ParkingLotDto(ParkingLotEntity parkingLotEntity)

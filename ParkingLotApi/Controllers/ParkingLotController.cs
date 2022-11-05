@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
 using System.Collections.Generic;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ParkingLotApi.Controllers
 {
