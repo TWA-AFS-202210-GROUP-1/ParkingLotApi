@@ -170,5 +170,44 @@ namespace ParkingLotApiTest.ControllerTest
 
             Assert.Equal(15, returnParkinglot.Capacity);
         }
+
+        [Fact]
+        public async Task Should_create_order_success()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkinglotDto = new ParkingLotDto
+            {
+                Name = "IBM",
+                Capacity = 10,
+                Location = "NYC",
+                OrderDtos = new List<OrderDto>()
+                {
+                    new OrderDto()
+                    {
+                        Ordernumber = 1,
+                        NameofParkinglot = 1,
+                        PlateNumber = "gb123",
+                        CreationTime = "20220102",
+                        CloseTime = "20220301",
+                        Status = true,
+                    },
+                },
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots", content);
+            Assert.Equal("Created", response.StatusCode.ToString());
+
+            // then
+            var allParkinglotsResponse = await client.GetAsync("/parkinglots");
+            var body = await allParkinglotsResponse.Content.ReadAsStringAsync();
+
+            var returnParkinglots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+
+            Assert.Single(returnParkinglots);
+        }
     }
 }
