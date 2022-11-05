@@ -30,13 +30,11 @@ public partial class Program
     using (var scope = app.Services.CreateScope())
     {
       var dbContext = scope.ServiceProvider.GetRequiredService<ParkingLotDbContext>();
-      using var context = scope.ServiceProvider.GetService<ParkingLotDbContext>();
-      context.Database.EnsureDeleted();
-      context.Database.EnsureCreated();
-      //if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
-      //{
-      //  dbContext.Database.Migrate();
-      //}
+
+      if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
+      {
+        dbContext.Database.Migrate();
+      }
     }
 
     // Configure the HTTP request pipeline.
