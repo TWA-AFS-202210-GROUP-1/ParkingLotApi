@@ -32,29 +32,71 @@ namespace ParkingLotApi.ControllerTest
             return context;
         }
 
-        private ParkingLotDto ParkingLotDto()
+        private List<ParkingLotDto> ParkingLotDtos()
         {
-            var parkingLotDto = new ParkingLotDto
+            var parkingLotDtos = new List<ParkingLotDto>()
             {
-                Name = "ParkingLot1",
-                Capacity = 10,
-                Location = "Beijing",
+                new ParkingLotDto()
+                {
+                    Name = "ParkingLot1",
+                    Capacity = 10,
+                    Location = "Beijing",
+                },
+                new ParkingLotDto()
+                {
+                    Name = "ParkingLot2",
+                    Capacity = 20,
+                    Location = "Shanghai",
+                },
             };
-            return parkingLotDto;
+            return parkingLotDtos;
         }
 
         [Fact]
-        public async Task Should_create_company_success_via_company_service()
+        public async Task Should_create_parking_lot_success_via_parking_lot_service()
         {
             // given
             var context = GetParkingLotContext();
             var parkingLotService= new ParkingLotService(context);
 
             // when
-            await parkingLotService.AddParkingLot(ParkingLotDto());
+            await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
 
             // then
             Assert.Equal(1, context.ParkingLots.Count());
+        }
+
+        [Fact]
+        public async Task Should_get_all_parking_lots_success_via_parking_lot_service()
+        {
+            // given
+            var context = GetParkingLotContext();
+            var parkingLotService = new ParkingLotService(context);
+            await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
+            await parkingLotService.AddParkingLot(ParkingLotDtos()[1]);
+
+            // when
+            await parkingLotService.GetAllParkingLot();
+
+            // then
+            Assert.Equal(2, context.ParkingLots.Count());
+        }
+
+        [Fact]
+        public async Task Should_delete_parking_lot_success_via_parking_lot_service()
+        {
+            // given
+            var context = GetParkingLotContext();
+            var parkingLotService = new ParkingLotService(context);
+            var id1 = await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
+            await parkingLotService.AddParkingLot(ParkingLotDtos()[1]);
+
+            // when
+            await parkingLotService.DeleteParkingLot(id1);
+
+            // then
+            Assert.Equal(1, context.ParkingLots.Count());
+            Assert.Equal(ParkingLotDtos()[1].Name, context.ParkingLots.ToList()[0].Name);
         }
     }
 }
