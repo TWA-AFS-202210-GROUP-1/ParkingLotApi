@@ -39,7 +39,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Single(returnParkingLots);
         }
 
@@ -55,7 +55,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Equal(this.ParkingLotDtos().Count, returnParkingLots.Count);
         }
 
@@ -71,7 +71,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Empty(returnParkingLots);
         }
 
@@ -87,9 +87,9 @@ namespace ParkingLotApi.ControllerTest
             var allParkingLotsResponsePage2 = await client.GetAsync("/parkingLots?pageIndex=2");
 
             // then
-            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponsePage1);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponsePage1);
             Assert.Equal(6, returnParkingLots.Count);
-            var returnParkingLots2 = await ConvertResponseToParkingLotDtos(allParkingLotsResponsePage2);
+            var returnParkingLots2 = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponsePage2);
             Assert.Empty(returnParkingLots2);
         }
 
@@ -105,9 +105,29 @@ namespace ParkingLotApi.ControllerTest
             var parkingLotResponse = await client.GetAsync(response.Headers.Location);
 
             // then
-            var body = await parkingLotResponse.Content.ReadAsStringAsync();
-            var returnParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(body);
+            var returnParkingLot = await ConvertResponseToParkingLotDtos<ParkingLotDto>(parkingLotResponse);
             Assert.Equal(this.ParkingLotDtos()[0].Name, returnParkingLot.Name);
+        }
+
+        [Fact]
+        public async void Should_modify_capacity_of_parking_lot_by_id()
+        {
+            // given
+            var client = this.GetClient();
+            var response = await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[0]);
+            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[1]);
+            var parkingLot = this.ParkingLotDtos()[0];
+            parkingLot.Capacity = 100;
+            var modifiedParkingLot = await this.ConvertDtoToStringContent(parkingLot);
+
+            // when
+            await client.PutAsync(response.Headers.Location, modifiedParkingLot);
+
+            // then
+            var parkingLotResponse = await client.GetAsync(response.Headers.Location);
+            var returnParkingLot = await ConvertResponseToParkingLotDtos<ParkingLotDto>(parkingLotResponse);
+            Assert.Equal(this.ParkingLotDtos()[0].Name, returnParkingLot.Name);
+            Assert.Equal(100, returnParkingLot.Capacity);
         }
     }
 }

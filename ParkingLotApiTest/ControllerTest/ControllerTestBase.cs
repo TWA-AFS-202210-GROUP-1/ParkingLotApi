@@ -49,10 +49,10 @@ namespace ParkingLotApiTest
             }
         }
 
-        protected static async Task<List<ParkingLotDto>> ConvertResponseToParkingLotDtos(HttpResponseMessage allParkingLotsResponse)
+        protected static async Task<T> ConvertResponseToParkingLotDtos<T>(HttpResponseMessage allParkingLotsResponse)
         {
             var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+            var returnParkingLots = JsonConvert.DeserializeObject<T>(body);
             return returnParkingLots;
         }
 
