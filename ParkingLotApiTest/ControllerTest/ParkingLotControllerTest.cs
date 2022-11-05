@@ -83,12 +83,30 @@ namespace ParkingLotApiTest.ControllerTest
       await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
-      var response = await httpClient.GetAsync($"/parking-lots?page=1");
+      var response = await httpClient.GetAsync("/parking-lots?page=1");
 
       // then
       var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
       Assert.Equal(parkingLotDtos.Count, returnedDtos?.Count);
+    }
+
+    [Fact]
+    public async void Should_remove_a_parking_lot_when_delete_given_id()
+    {
+      // given
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
+
+      // when
+      var deleteResponse = await httpClient.DeleteAsync($"/parking-lots/{idList[0]}");
+
+      // then
+      var response = await httpClient.GetAsync("/parking-lots");
+      var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
+      Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+      Assert.Equal(parkingLotDtos.Count - 1, returnedDtos?.Count);
     }
   }
 }

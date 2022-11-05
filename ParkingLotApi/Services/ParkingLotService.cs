@@ -42,15 +42,23 @@ namespace ParkingLotApi.Services
       return new ParkingLotDto(parkingLot);
     }
 
-    public List<ParkingLotDto> GetPage(int page)
+    public List<ParkingLotDto> GetByPageIndex(int pageIndex)
     {
       var parkingLots = parkingLotDbContext.ParkingLots.ToList();
 
       return parkingLots
         .Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity))
-        .Skip((page - 1) * pageSize)
+        .Skip((pageIndex - 1) * pageSize)
         .Take(pageSize)
         .ToList();
+    }
+
+    public async Task RemoveParkingLot(int id)
+    {
+      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+
+      parkingLotDbContext.ParkingLots.Remove(parkingLot);
+      await parkingLotDbContext.SaveChangesAsync();
     }
   }
 }

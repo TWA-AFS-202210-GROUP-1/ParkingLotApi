@@ -28,9 +28,9 @@ namespace ParkingLotApi.Controllers
     }
 
     [HttpGet]
-    public IActionResult GetParkingLots([FromQuery] int? page)
+    public IActionResult GetParkingLots([FromQuery] int? pageIndex)
     {
-      if (page == null)
+      if (pageIndex == null)
       {
         var parkingLotDtos = parkingLotService.GetAll();
 
@@ -38,18 +38,32 @@ namespace ParkingLotApi.Controllers
       }
       else
       {
-        var parkingLotDtos = parkingLotService.GetPage(page.Value);
+        var parkingLotDtos = parkingLotService.GetByPageIndex(pageIndex.Value);
 
         return Ok(parkingLotDtos);
       }
     }
 
-    [HttpGet("{id}")]
-    public IActionResult GetById([FromRoute] int id)
+    [HttpGet("{parkingLotId}")]
+    public IActionResult GetById([FromRoute] int parkingLotId)
     {
-      var parkingLotDto = parkingLotService.GetById(id);
+      var parkingLotDto = parkingLotService.GetById(parkingLotId);
 
       return Ok(parkingLotDto);
+    }
+
+    [HttpPut("{parkingLotId}")]
+    public IActionResult UpdateCapacity([FromRoute] int parkingLotId, int newCapacity)
+    {
+      return Ok();
+    }
+
+    [HttpDelete("{parkingLotId}")]
+    public async Task<IActionResult> DeleteById([FromRoute] int parkingLotId)
+    {
+      await parkingLotService.RemoveParkingLot(parkingLotId);
+
+      return NoContent();
     }
   }
 }
