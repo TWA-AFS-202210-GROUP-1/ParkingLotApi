@@ -207,9 +207,8 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             var allParkinglotsResponse = await client.PostAsync("/parkinglots/1/orders", content);
-            Assert.Equal("Created", allParkinglotsResponse.StatusCode.ToString());
+            Assert.Equal("OK", allParkinglotsResponse.StatusCode.ToString());
         }
-
 
         [Fact]
         public async Task Should_update_order_when_car_leave()
@@ -268,6 +267,59 @@ namespace ParkingLotApiTest.ControllerTest
 
             returnOrder = JsonConvert.DeserializeObject<OrderDto>(body);
             Assert.Equal("close", returnOrder.Status);
+        }
+
+        [Fact]
+        public async Task Should_warn_user_when_parkinglot_full()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkinglotDto = new ParkingLotDto
+            {
+                Name = "IBM",
+                Capacity = 1,
+                Location = "NYC",
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/parkinglots", content);
+            var OrderDto = new OrderDto()
+            {
+                Ordernumber = 1,
+                NameofParkinglot = "1",
+                PlateNumber = "gb123",
+                CreationTime = GetTimestamp(DateTime.Now),
+                CloseTime = string.Empty,
+                Status = "open",
+            };
+            httpContent = JsonConvert.SerializeObject(OrderDto);
+            content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots/1/orders", content);
+
+            var body = await response.Content.ReadAsStringAsync();
+
+            var returnparkinglot = JsonConvert.DeserializeObject<OrderDto>(body);
+
+            OrderDto = new OrderDto()
+            {
+                Ordernumber = 2,
+                NameofParkinglot = "1",
+                PlateNumber = "gb143",
+                CreationTime = GetTimestamp(DateTime.Now),
+                CloseTime = string.Empty,
+                Status = "open",
+            };
+            httpContent = JsonConvert.SerializeObject(OrderDto);
+            content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            response = await client.PostAsync("/parkinglots/1/orders", content);
+
+            body = await response.Content.ReadAsStringAsync();
+
+            var returnOrder = JsonConvert.DeserializeObject<OrderDto>(body);
+            // then
+            Assert.Equal("The parking lot is full", returnOrder.Status);
         }
     }
 }

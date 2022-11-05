@@ -108,6 +108,11 @@ namespace ParkingLotApi.Controllers
                 var updatedorderDto = await this.parkinglotService.AddOrderById(id, orderDto);
                 return updatedorderDto;
             }
+            else
+            {
+                orderDto.Status = "The parking lot is full";
+                return Conflict(orderDto);
+            }
 
             return NotFound();
         }
