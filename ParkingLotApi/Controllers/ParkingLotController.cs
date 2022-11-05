@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +27,25 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ParkingLotDto>> GetById(int id)
+        public async Task<ActionResult<ParkingLotDto>> GetById(int id, int? size, string? details)
         {
+            if (size != null)
+            {
+                var resultParkinglots = new List<ParkingLotDto>();
+                var parkinglotDtos = await this.parkinglotService.GetAll();
+                if (id < parkinglotDtos.Count)
+                {
+                    for (int i = id; i < Math.Min(parkinglotDtos.Count, id + 15); i++)
+                    {
+                        resultParkinglots.Add(parkinglotDtos[i - 1]);
+                    }
+
+                    return Ok(resultParkinglots);
+                }
+
+                return NoContent();
+            }
+
             var companyDto = await this.parkinglotService.GetById(id);
             return Ok(companyDto);
         }
