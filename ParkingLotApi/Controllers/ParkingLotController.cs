@@ -62,6 +62,18 @@ namespace ParkingLotApi.Controllers
             return Ok(parkinglotDto);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ParkingLotDto>> GetById([FromRoute] int id, ParkingLotDto parkinglot)
+        {
+            var parkinglotDto = await this.parkinglotService.GetById(id);
+            if (parkinglot.Capacity > parkinglotDto.Capacity)
+            {
+                parkinglotDto.Capacity = parkinglot.Capacity;
+            }
+
+            return Ok(parkinglotDto);
+        }
+
         [HttpPost]
         public async Task<ActionResult<ParkingLotDto>> Add(ParkingLotDto parkinglotDto)
         {
