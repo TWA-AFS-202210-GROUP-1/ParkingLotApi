@@ -108,5 +108,25 @@ namespace ParkingLotApiTest.ControllerTest
       Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
       Assert.Equal(parkingLotDtos.Count - 1, returnedDtos?.Count);
     }
+
+    [Fact]
+    public async void Should_change_parking_lot_information_when_put_given_id()
+    {
+      // given
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
+      parkingLotDtos[2].Capacity = 15;
+      var requestBody = TestService.SerializeDto(parkingLotDtos[2]);
+
+      // when
+      var putResponse = await httpClient.PutAsync($"/parking-lots/{idList[2]}", requestBody);
+
+      // then
+      var response = await httpClient.GetAsync($"/parking-lots/{idList[2]}");
+      var returnedDto = await TestService.GetResponseContents<ParkingLotDto>(response);
+      Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
+      Assert.Equal(15, returnedDto?.Capacity);
+    }
   }
 }

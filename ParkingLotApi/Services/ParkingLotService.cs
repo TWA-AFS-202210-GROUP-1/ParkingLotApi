@@ -53,10 +53,19 @@ namespace ParkingLotApi.Services
         .ToList();
     }
 
+    public async Task<ParkingLotDto> UpdateCapacity(int id, ParkingLotDto newParkingLotDto)
+    {
+      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+      parkingLot.Capacity = newParkingLotDto.Capacity;
+      parkingLotDbContext.ParkingLots.Update(parkingLot);
+      await parkingLotDbContext.SaveChangesAsync();
+
+      return new ParkingLotDto(parkingLot);
+    }
+
     public async Task RemoveParkingLot(int id)
     {
       var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
-
       parkingLotDbContext.ParkingLots.Remove(parkingLot);
       await parkingLotDbContext.SaveChangesAsync();
     }
