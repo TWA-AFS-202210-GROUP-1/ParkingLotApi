@@ -62,17 +62,16 @@ namespace ParkingLotApi.ControllerTest
             // given
             var context = GetParkingLotContext();
             var parkingLotService = new ParkingLotService(context);
-            var id1 = await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
+            var id = await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
             await parkingLotService.AddParkingLot(ParkingLotDtos()[1]);
 
             // when
-            await parkingLotService.DeleteParkingLot(id1);
+            await parkingLotService.DeleteParkingLot(id);
 
             // then
             Assert.Equal(1, context.ParkingLots.Count());
             Assert.Equal(ParkingLotDtos()[1].Name, context.ParkingLots.ToList()[0].Name);
         }
-
 
         [Fact]
         public async Task Should_get_parking_lots_by_range_via_parking_lot_service()
@@ -92,6 +91,22 @@ namespace ParkingLotApi.ControllerTest
             // then
             Assert.Equal(6, parkingLotByRangePage1.Count());
             Assert.Empty(parkingLotByRangePage2);
+        }
+
+        [Fact]
+        public async Task Should_get_parking_lot_by_id_via_parking_lot_service()
+        {
+            // given
+            var context = GetParkingLotContext();
+            var parkingLotService = new ParkingLotService(context);
+            var id = await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
+            await parkingLotService.AddParkingLot(ParkingLotDtos()[1]);
+
+            // when
+            var parkingLotDto = await parkingLotService.GetById(id);
+
+            // then
+            Assert.Equal(ParkingLotDtos()[0].Name, parkingLotDto.Name);
         }
     }
 }

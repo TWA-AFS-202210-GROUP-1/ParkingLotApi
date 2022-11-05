@@ -9,6 +9,7 @@ using Xunit.Sdk;
 
 namespace ParkingLotApi.ControllerTest
 {
+    using System.Linq;
     using System.Net;
     using System.Net.Mime;
     using System.Text;
@@ -90,6 +91,23 @@ namespace ParkingLotApi.ControllerTest
             Assert.Equal(6, returnParkingLots.Count);
             var returnParkingLots2 = await ConvertResponseToParkingLotDtos(allParkingLotsResponsePage2);
             Assert.Empty(returnParkingLots2);
+        }
+
+        [Fact]
+        public async void Should_return_parking_lot_by_id()
+        {
+            // given
+            var client = this.GetClient();
+            var response = await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[0]);
+            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[1]);
+
+            // when
+            var parkingLotResponse = await client.GetAsync(response.Headers.Location);
+
+            // then
+            var body = await parkingLotResponse.Content.ReadAsStringAsync();
+            var returnParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(body);
+            Assert.Equal(this.ParkingLotDtos()[0].Name, returnParkingLot.Name);
         }
     }
 }

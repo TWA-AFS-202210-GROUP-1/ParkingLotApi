@@ -49,5 +49,12 @@ namespace ParkingLotApi.Services
 
             return parkingLotDtos.Skip((pageIndex - 1) * pageSize).Take(pageSize);
         }
+
+        public async Task<ParkingLotDto?> GetById(int id)
+        {
+            var findParkingLot = await parkingLotContext.ParkingLots
+                .FirstOrDefaultAsync(parkingLot => parkingLot.Id == id);
+            return new ParkingLotDto(findParkingLot);
+        }
     }
 }

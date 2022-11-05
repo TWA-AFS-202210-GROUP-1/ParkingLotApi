@@ -40,6 +40,13 @@ namespace ParkingLotApi.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ParkingLotDto>> GetParkingLotById([FromRoute] int id)
+        {
+            var parkingLotDto = await this.parkingLotService.GetById(id);
+            return Ok(parkingLotDto);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<int>> Delete([FromRoute] int id)
         {
