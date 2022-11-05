@@ -11,7 +11,7 @@ namespace ParkingLotApi.Controllers
     [Route("parkingLots")]
     public class ParkingLotController: ControllerBase
     {
-        private readonly ParkingLotService parkingLotService;
+        private readonly IParkingLotService parkingLotService;
 
         public ParkingLotController(ParkingLotService parkingLotService)
         {

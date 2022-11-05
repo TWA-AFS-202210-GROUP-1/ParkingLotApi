@@ -9,7 +9,7 @@ using ParkingLotApi.Repository;
 
 namespace ParkingLotApi.Services
 {
-    public class ParkingLotService
+    public class ParkingLotService : IParkingLotService
     {
         private readonly ParkingLotContext parkingLotContext;
 
