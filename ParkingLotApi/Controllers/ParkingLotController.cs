@@ -12,9 +12,9 @@ namespace ParkingLotApi.Controllers
   [Route("parking-lots")]
   public class ParkingLotController : ControllerBase
   {
-    private readonly ParkingLotService parkingLotService;
+    private readonly IParkingLotService parkingLotService;
 
-    public ParkingLotController(ParkingLotService parkingLotService)
+    public ParkingLotController(IParkingLotService parkingLotService)
     {
       this.parkingLotService = parkingLotService;
     }

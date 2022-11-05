@@ -18,7 +18,7 @@ public partial class Program
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     //builder.Services.AddScoped<IParkingLotService, ParkingLotService>();
-    builder.Services.AddScoped<ParkingLotService>();
+    builder.Services.AddScoped<IParkingLotService, ParkingLotService>();
 
     builder.Services.AddDbContext<ParkingLotDbContext>(options =>
     {

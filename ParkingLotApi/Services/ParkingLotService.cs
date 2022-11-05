@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ParkingLotApi.Services
 {
-  public class ParkingLotService
+  public class ParkingLotService : IParkingLotService
   {
     private readonly ParkingLotDbContext parkingLotDbContext;
     private readonly int pageSize = 15;
