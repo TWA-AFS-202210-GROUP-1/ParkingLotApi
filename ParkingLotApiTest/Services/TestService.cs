@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace ParkingLotApiTest.Services
 {
-  public class TestService
+  public static class TestService
   {
     public static StringContent SerializeDto<T>(T requestDto)
     {
@@ -33,7 +33,7 @@ namespace ParkingLotApiTest.Services
       return requestBodyList;
     }
 
-    public static async Task<T?> DeserializeResponseContent<T>(HttpResponseMessage response)
+    public static async Task<T?> GetResponseContents<T>(HttpResponseMessage response)
     {
       if (response.Content != null)
       {
@@ -48,16 +48,21 @@ namespace ParkingLotApiTest.Services
       }
     }
 
-    public static async Task PostDtoList<T>(HttpClient httpClient, string uri, List<T> requestDtoList)
+    public static async Task<List<int>> PostDtoList<T>(HttpClient httpClient, string url, List<T> requestDtoList)
     {
+      var idList = new List<int>();
       var requestBodyList = SerializeDtoList(requestDtoList);
       foreach (var requestBody in requestBodyList)
       {
-        await httpClient.PostAsync(uri, requestBody);
+        var response = await httpClient.PostAsync(url, requestBody);
+        var idString = await response.Content.ReadAsStringAsync();
+        idList.Add(int.Parse(idString));
       }
+
+      return idList;
     }
 
-    public static List<ParkingLotDto> PrepareTestParkingLots()
+    public static List<ParkingLotDto> PrepareParkingLotDtos()
     {
       return new List<ParkingLotDto>
       {

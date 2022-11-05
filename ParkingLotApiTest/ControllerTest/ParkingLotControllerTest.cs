@@ -24,16 +24,16 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareTestParkingLots();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
       var requestBody = TestService.SerializeDto(parkingLotDtos[0]);
 
       // when
       var response = await httpClient.PostAsync("/parking-lots", requestBody);
 
       // then
-      Assert.Equal(HttpStatusCode.Created, response.StatusCode);
       var idString = await response.Content.ReadAsStringAsync();
-      Assert.Equal(1, int.Parse(idString));
+      Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+      Assert.NotNull(idString);
     }
 
     [Fact]
@@ -41,17 +41,37 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareTestParkingLots();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
       await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
       var response = await httpClient.GetAsync("/parking-lots");
 
       // then
+      var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-      var returnedDtos = await TestService.DeserializeResponseContent<List<ParkingLotDto>>(response);
       Assert.Equal(parkingLotDtos.Count, returnedDtos?.Count);
-      Assert.Equal(parkingLotDtos[0].ToString(), returnedDtos?[0].ToString());
+      for (int index = 0; index < parkingLotDtos.Count; index++)
+      {
+        Assert.Equal(parkingLotDtos[index].ToString(), returnedDtos?[index].ToString());
+      }
+    }
+
+    [Fact]
+    public async void Should_get_parking_lot_by_id_when_get_given_id()
+    {
+      // given
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
+
+      // when
+      var response = await httpClient.GetAsync($"/parking-lots/{idList[1]}");
+
+      // then
+      var returnedDto = await TestService.GetResponseContents<ParkingLotDto>(response);
+      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.Equal(parkingLotDtos[1].ToString(), returnedDto?.ToString());
     }
   }
 }
