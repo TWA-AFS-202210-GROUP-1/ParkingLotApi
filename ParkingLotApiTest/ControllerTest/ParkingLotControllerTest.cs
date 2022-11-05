@@ -38,8 +38,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
             Assert.Single(returnParkingLots);
         }
 
@@ -48,16 +47,15 @@ namespace ParkingLotApi.ControllerTest
         {
             // given
             var client = this.GetClient();
-            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[0]);
-            await this.PostAsyncParkingLotDto(client, this.ParkingLotDtos()[1]);
+            await this.PostAsyncParkingLotDtoList(client, this.ParkingLotDtos());
 
             // when
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
 
             // then
             var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
-            Assert.Equal(2, returnParkingLots.Count);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
+            Assert.Equal(4, returnParkingLots.Count);
         }
 
         [Fact]
@@ -72,8 +70,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
             Assert.Empty(returnParkingLots);
         }
     }
