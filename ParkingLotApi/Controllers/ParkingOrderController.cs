@@ -12,9 +12,9 @@ namespace ParkingLotApi.Controllers
   [Route("orders")]
   public class ParkingOrderController : ControllerBase
   {
-    private readonly ParkingOrderService parkingOrderService;
+    private readonly IParkingOrderService parkingOrderService;
 
-    public ParkingOrderController(ParkingOrderService parkingOrderService)
+    public ParkingOrderController(IParkingOrderService parkingOrderService)
     {
       this.parkingOrderService = parkingOrderService;
     }

@@ -19,7 +19,7 @@ public partial class Program
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddScoped<IParkingLotService, ParkingLotService>();
-    builder.Services.AddScoped<ParkingOrderService>();
+    builder.Services.AddScoped<IParkingOrderService, ParkingOrderService>();
 
     builder.Services.AddDbContext<ParkingLotDbContext>(options =>
     {

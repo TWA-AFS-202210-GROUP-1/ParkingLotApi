@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ParkingLotApi.Services
 {
-  public class ParkingOrderService
+  public class ParkingOrderService : IParkingOrderService
   {
     private readonly ParkingLotDbContext parkingLotDbContext;
 
