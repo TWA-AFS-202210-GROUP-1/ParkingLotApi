@@ -25,7 +25,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
       var requestBody = TestService.SerializeDto(parkingLotDtos[0]);
 
       // when
@@ -42,7 +42,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(3, 1);
       await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
@@ -63,7 +63,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(3, 1);
       var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
@@ -80,7 +80,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(20, 1);
       await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
@@ -89,7 +89,7 @@ namespace ParkingLotApiTest.ControllerTest
       // then
       var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-      Assert.Equal(parkingLotDtos.Count, returnedDtos?.Count);
+      Assert.Equal(15, returnedDtos?.Count);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(3, 1);
       var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
@@ -115,7 +115,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
       // given
       var httpClient = GetHttpClient();
-      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(3, 10);
       var idList = await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
       parkingLotDtos[2].Capacity = 15;
       var requestBody = TestService.SerializeDto(parkingLotDtos[2]);

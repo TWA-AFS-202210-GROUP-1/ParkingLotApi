@@ -29,5 +29,8 @@
     <ItemGroup>
         <ProjectReference Include="..\ParkingLotApi\ParkingLotApi.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ServiceTests\" />
+    </ItemGroup>
 
 </Project>

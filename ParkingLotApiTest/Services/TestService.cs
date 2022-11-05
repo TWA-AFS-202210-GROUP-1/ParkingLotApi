@@ -1,15 +1,11 @@
 ﻿using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
-using ParkingLotApi.Models;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ParkingLotApiTest.Services
 {
@@ -63,47 +59,17 @@ namespace ParkingLotApiTest.Services
       return idList;
     }
 
-    public static List<ParkingLotDto> PrepareParkingLotDtos()
+    public static List<ParkingLotDto> PrepareParkingLotDtos(int amount, int defaultCapacity)
     {
-      return new List<ParkingLotDto>
-      {
-        new ParkingLotDto("Park Xpert", 10, "Aaron's Hill, Surrey"),
-        new ParkingLotDto("Mountain View Parking", 10, "Clapton, Berkshire"),
-        new ParkingLotDto("Drive On Park", 10, "Stocksbridge, Sheffield"),
-        new ParkingLotDto("Parker Parking", 10, "Knighton, City of Leicester"),
-        new ParkingLotDto("Parking Miles", 10, "Stockstreet, Essex"),
-      };
+      amount = amount <= 0 ? 1 : amount;
+      TestDataCollection.DefaultCapacity = defaultCapacity <= 0 ? 1 : defaultCapacity;
+
+      return TestDataCollection.ParkingLots.Take(amount).ToList();
     }
 
     public static List<ParkingOrderDto> PrepareParkingOrderDtos()
     {
-      return new List<ParkingOrderDto>
-      {
-        new ParkingOrderDto
-        {
-          ParkingLot = "Park Xpert",
-          PlateNumber = "GD40 FDM",
-          CreationTime = DateTime.Now,
-          CloseTime = DateTime.Now,
-          Status = OrderStatus.Open,
-        },
-        new ParkingOrderDto
-        {
-          ParkingLot = "Drive On Park",
-          PlateNumber = "AO24 HJF",
-          CreationTime = DateTime.Now,
-          CloseTime = DateTime.Now,
-          Status = OrderStatus.Open,
-        },
-        new ParkingOrderDto
-        {
-          ParkingLot = "Parking Miles",
-          PlateNumber = "KM14 POW",
-          CreationTime = DateTime.Now,
-          CloseTime = DateTime.Now,
-          Status = OrderStatus.Open,
-        },
-      };
+      return TestDataCollection.ParkingOrders;
     }
   }
 }

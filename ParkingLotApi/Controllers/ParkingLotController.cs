@@ -28,9 +28,9 @@ namespace ParkingLotApi.Controllers
     }
 
     [HttpGet]
-    public IActionResult GetParkingLots([FromQuery] int? pageIndex)
+    public IActionResult GetParkingLots([FromQuery] int? page)
     {
-      if (pageIndex == null)
+      if (page == null)
       {
         var parkingLotDtos = parkingLotService.GetAll();
 
@@ -38,7 +38,7 @@ namespace ParkingLotApi.Controllers
       }
       else
       {
-        var parkingLotDtos = parkingLotService.GetByPageIndex(pageIndex.Value);
+        var parkingLotDtos = parkingLotService.GetByPageIndex(page.Value);
 
         return Ok(parkingLotDtos);
       }
