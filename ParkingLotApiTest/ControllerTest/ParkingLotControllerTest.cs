@@ -10,12 +10,18 @@ namespace ParkingLotApiTest.ControllerTest
     using System.Threading.Tasks;
     using ParkingLotApi;
     using Xunit;
+    using System;
 
     [Collection("test")]
     public class ParkingLotControllerTest : TestBase
     {
         public ParkingLotControllerTest(CustomWebApplicationFactory<Program> factory) : base(factory)
         {
+        }
+
+        public static string GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
         }
 
         [Fact]
@@ -190,11 +196,11 @@ namespace ParkingLotApiTest.ControllerTest
             var OrderDto = new OrderDto()
             {
                 Ordernumber = 1,
-                NameofParkinglot = 1,
+                NameofParkinglot = "1",
                 PlateNumber = "gb123",
                 CreationTime = "20220102",
                 CloseTime = "20220301",
-                Status = true,
+                Status = "open",
             };
             httpContent = JsonConvert.SerializeObject(OrderDto);
             content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -202,6 +208,66 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             var allParkinglotsResponse = await client.PostAsync("/parkinglots/1/orders", content);
             Assert.Equal("Created", allParkinglotsResponse.StatusCode.ToString());
+        }
+
+
+        [Fact]
+        public async Task Should_update_order_when_car_leave()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkinglotDto = new ParkingLotDto
+            {
+                Name = "IBM",
+                Capacity = 10,
+                Location = "NYC",
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/parkinglots", content);
+            var OrderDto = new OrderDto()
+            {
+                Ordernumber = 1,
+                NameofParkinglot = "1",
+                PlateNumber = "gb123",
+                CreationTime = GetTimestamp(DateTime.Now),
+                CloseTime = string.Empty,
+                Status = "open",
+            };
+            httpContent = JsonConvert.SerializeObject(OrderDto);
+            content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots/1/orders", content);
+
+            var body = await response.Content.ReadAsStringAsync();
+
+            var returnparkinglot = JsonConvert.DeserializeObject<OrderDto>(body);
+
+            response = await client.GetAsync("/parkinglots/1/orders/1");
+            body = await response.Content.ReadAsStringAsync();
+
+            var returnOrder = JsonConvert.DeserializeObject<OrderDto>(body);
+
+            OrderDto = new OrderDto()
+            {
+                Ordernumber = 1,
+                NameofParkinglot = "1",
+                PlateNumber = "gb123",
+                CreationTime = returnOrder.CreationTime,
+                CloseTime = GetTimestamp(DateTime.Now),
+                Status = "close",
+            };
+            httpContent = JsonConvert.SerializeObject(OrderDto);
+            content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            // then
+            response = await client.PutAsync("/parkinglots/1/orders/1", content);
+
+            body = await response.Content.ReadAsStringAsync();
+
+            returnOrder = JsonConvert.DeserializeObject<OrderDto>(body);
+            Assert.Equal("close", returnOrder.Status);
         }
     }
 }

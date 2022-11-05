@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using ParkingLotApi.Model;
 
 namespace ParkingLotApi.Controllers
 {
@@ -16,6 +19,11 @@ namespace ParkingLotApi.Controllers
         public ParkingLotController(ParkingLotService parkinglotService)
         {
             this.parkinglotService = parkinglotService;
+        }
+
+        public static string GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
         }
 
         [HttpGet]
@@ -83,18 +91,48 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpPost("{id}/orders")]
-        public async Task<ActionResult<ParkingLotDto>> AddNewOrdertoCompany([FromRoute] int id, OrderDto orderDto)
+        public async Task<ActionResult<OrderDto>> AddNewOrdertoCompany([FromRoute] int id, OrderDto orderDto)
         {
             var parkinglotDto = await this.parkinglotService.GetById(id);
+
             if (parkinglotDto.OrderDtos == null)
             {
                 parkinglotDto.OrderDtos = new List<OrderDto>();
+                var updatedorderDto = await this.parkinglotService.AddOrderById(id, orderDto);
+                return updatedorderDto;
             }
 
             if (parkinglotDto.OrderDtos.Count < parkinglotDto.Capacity)
             {
                 parkinglotDto.OrderDtos.Add(orderDto);
-                return CreatedAtAction(nameof(GetById), new { id = id }, parkinglotDto);
+                var updatedorderDto = await this.parkinglotService.AddOrderById(id, orderDto);
+                return updatedorderDto;
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("{id}/orders/{ordernumber}")]
+        public async Task<ActionResult<ParkingLotDto>> GetOrder([FromRoute] int id, [FromRoute] int ordernumber)
+        {
+            var parkinglotDto = await this.parkinglotService.GetById(id);
+            if (parkinglotDto.OrderDtos != null)
+            {
+                var foundOrder = parkinglotDto.OrderDtos.FirstOrDefault(order => order.Ordernumber == ordernumber);
+                return Ok(foundOrder);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPut("{id}/orders/{orderid}")]
+        public async Task<ActionResult<OrderDto>> ChangeOrder([FromRoute] int id, [FromRoute] int orderid, OrderDto orderdto)
+        {
+            var parkinglotDto = await this.parkinglotService.GetById(id);
+            if (parkinglotDto.OrderDtos != null)
+            {
+                var updatedorderDto = await this.parkinglotService.UpdateById(id, orderid);
+                return updatedorderDto;
             }
 
             return NotFound();

@@ -24,7 +24,7 @@ namespace ParkingLotApi.Dtos
 
         public int Ordernumber { get; set; }
 
-        public int NameofParkinglot { get; set; }
+        public string NameofParkinglot { get; set; }
 
         public string PlateNumber { get; set; }
 
@@ -32,7 +32,7 @@ namespace ParkingLotApi.Dtos
 
         public string CloseTime { get; set; }
 
-        public bool Status { get; set; }
+        public string Status { get; set; }
 
         public OrderEntity ToEntity()
         {
