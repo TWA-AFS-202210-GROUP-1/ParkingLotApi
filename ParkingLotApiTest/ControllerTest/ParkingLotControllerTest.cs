@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace ParkingLotApiTest.ControllerTest
 {
+  [Collection("SequenceAlpha")]
   public class ParkingLotControllerTest : TestBase
   {
     public ParkingLotControllerTest(CustomWebApplicationFactory<Program> factory) : base(factory)
@@ -110,7 +111,7 @@ namespace ParkingLotApiTest.ControllerTest
     }
 
     [Fact]
-    public async void Should_change_parking_lot_information_when_put_given_id()
+    public async void Should_change_parking_lot_capacity_when_put_given_id()
     {
       // given
       var httpClient = GetHttpClient();

@@ -1,4 +1,5 @@
 ﻿using ParkingLotApi.Models;
+using System.Collections.Generic;
 
 namespace ParkingLotApi.Dtos
 {
@@ -35,6 +36,7 @@ namespace ParkingLotApi.Dtos
         Name = Name,
         Capacity = Capacity,
         Location = Location,
+        ParkingOrders = new List<ParkingOrderEntity>(),
       };
     }
 

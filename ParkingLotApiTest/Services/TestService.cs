@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
+using ParkingLotApi.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,6 +72,37 @@ namespace ParkingLotApiTest.Services
         new ParkingLotDto("Drive On Park", 10, "Stocksbridge, Sheffield"),
         new ParkingLotDto("Parker Parking", 10, "Knighton, City of Leicester"),
         new ParkingLotDto("Parking Miles", 10, "Stockstreet, Essex"),
+      };
+    }
+
+    public static List<ParkingOrderDto> PrepareParkingOrderDtos()
+    {
+      return new List<ParkingOrderDto>
+      {
+        new ParkingOrderDto
+        {
+          ParkingLot = "Park Xpert",
+          PlateNumber = "GD40 FDM",
+          CreationTime = DateTime.Now,
+          CloseTime = DateTime.Now,
+          Status = OrderStatus.Open,
+        },
+        new ParkingOrderDto
+        {
+          ParkingLot = "Drive On Park",
+          PlateNumber = "AO24 HJF",
+          CreationTime = DateTime.Now,
+          CloseTime = DateTime.Now,
+          Status = OrderStatus.Open,
+        },
+        new ParkingOrderDto
+        {
+          ParkingLot = "Parking Miles",
+          PlateNumber = "KM14 POW",
+          CreationTime = DateTime.Now,
+          CloseTime = DateTime.Now,
+          Status = OrderStatus.Open,
+        },
       };
     }
   }
