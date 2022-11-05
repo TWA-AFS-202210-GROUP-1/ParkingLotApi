@@ -22,6 +22,11 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<IEnumerable<ParkingLotDto>>> List()
         {
             var parkinglotDtos = await this.parkinglotService.GetAll();
+            var resultparkinglotDtos = new List<ParkingLotDto>();
+            foreach (var parkinglot in parkinglotDtos)
+            {
+                resultparkinglotDtos.Add(new ParkingLotDto(parkinglot.Name, parkinglot.Capacity));
+            }
 
             return Ok(parkinglotDtos);
         }
@@ -37,7 +42,7 @@ namespace ParkingLotApi.Controllers
                 {
                     for (int i = id; i < Math.Min(parkinglotDtos.Count, id + 15); i++)
                     {
-                        resultParkinglots.Add(parkinglotDtos[i - 1]);
+                        resultParkinglots.Add(new ParkingLotDto(parkinglotDtos[i - 1].Name, parkinglotDtos[i - 1].Capacity));
                     }
 
                     return Ok(resultParkinglots);
@@ -46,8 +51,15 @@ namespace ParkingLotApi.Controllers
                 return NoContent();
             }
 
-            var companyDto = await this.parkinglotService.GetById(id);
-            return Ok(companyDto);
+            if (details != null)
+            {
+                var detailedparkinglotDto = await this.parkinglotService.GetById(id);
+                return Ok(detailedparkinglotDto);
+            }
+
+            var parkinglotDto = await this.parkinglotService.GetById(id);
+            parkinglotDto = new ParkingLotDto(parkinglotDto.Name, parkinglotDto.Capacity);
+            return Ok(parkinglotDto);
         }
 
         [HttpPost]

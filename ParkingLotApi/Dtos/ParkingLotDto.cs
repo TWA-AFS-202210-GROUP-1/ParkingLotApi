@@ -12,6 +12,12 @@ namespace ParkingLotApi.Dtos
         {
         }
 
+        public ParkingLotDto(string name, int capacity)
+        {
+            Name = name;
+            Capacity = capacity;
+        }
+
         public ParkingLotDto(ParkingLotEntity parkinglotEntity)
         {
             Name = parkinglotEntity.Name;
