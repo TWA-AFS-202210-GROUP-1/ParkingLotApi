@@ -26,18 +26,9 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ParkingLotDbContext>();
 
-    //if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
-    //{
-    //    dbContext.Database.Migrate();
-    //}
-    using (var context = scope.ServiceProvider.GetService<ParkingLotDbContext>())
+    if (dbContext.Database.ProviderName.ToLower().Contains("mysql"))
     {
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
-        //if (context.Database.IsRelational())
-        //{
-        //    context.Database.Migrate();
-        //}
+        dbContext.Database.Migrate();
     }
 }
 
