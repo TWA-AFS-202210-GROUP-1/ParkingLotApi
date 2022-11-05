@@ -28,17 +28,26 @@ namespace ParkingLotApi.Controllers
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetParkingLots([FromQuery] int? page)
     {
-      var parkingLotDtos = parkingLotService.GetAll();
+      if (page == null)
+      {
+        var parkingLotDtos = parkingLotService.GetAll();
 
-      return Ok(parkingLotDtos);
+        return Ok(parkingLotDtos);
+      }
+      else
+      {
+        var parkingLotDtos = parkingLotService.GetPage(page.Value);
+
+        return Ok(parkingLotDtos);
+      }
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    public IActionResult GetById([FromRoute] int id)
     {
-      var parkingLotDto = await parkingLotService.GetById(id);
+      var parkingLotDto = parkingLotService.GetById(id);
 
       return Ok(parkingLotDto);
     }

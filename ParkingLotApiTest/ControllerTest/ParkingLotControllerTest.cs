@@ -20,7 +20,7 @@ namespace ParkingLotApiTest.ControllerTest
     }
 
     [Fact]
-    public async void Should_create_parking_lot_when_post()
+    public async void Should_create_a_parking_lot_with_id_when_post()
     {
       // given
       var httpClient = GetHttpClient();
@@ -37,7 +37,7 @@ namespace ParkingLotApiTest.ControllerTest
     }
 
     [Fact]
-    public async void Should_get_all_parking_lots_when_get_given_multiple_parking_lots()
+    public async void Should_return_all_parking_lots_when_get_given_multiple_parking_lots()
     {
       // given
       var httpClient = GetHttpClient();
@@ -58,7 +58,7 @@ namespace ParkingLotApiTest.ControllerTest
     }
 
     [Fact]
-    public async void Should_get_parking_lot_by_id_when_get_given_id()
+    public async void Should_return_a_parking_lot_when_get_given_id()
     {
       // given
       var httpClient = GetHttpClient();
@@ -72,6 +72,23 @@ namespace ParkingLotApiTest.ControllerTest
       var returnedDto = await TestService.GetResponseContents<ParkingLotDto>(response);
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
       Assert.Equal(parkingLotDtos[1].ToString(), returnedDto?.ToString());
+    }
+
+    [Fact]
+    public async void Should_return_a_page_of_parking_lots_when_get_given_page_index()
+    {
+      // given
+      var httpClient = GetHttpClient();
+      var parkingLotDtos = TestService.PrepareParkingLotDtos();
+      await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
+
+      // when
+      var response = await httpClient.GetAsync($"/parking-lots?page=1");
+
+      // then
+      var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
+      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.Equal(parkingLotDtos.Count, returnedDtos?.Count);
     }
   }
 }
