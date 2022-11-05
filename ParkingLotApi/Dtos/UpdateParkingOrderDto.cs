@@ -14,6 +14,7 @@ public class UpdateParkingOrderDto
 
     public void UpdateEntity(ParkingOrderEntity entity)
     {
+        entity.CloseTime = DateTime.Now;
         entity.Status = Status;
     }
 }
