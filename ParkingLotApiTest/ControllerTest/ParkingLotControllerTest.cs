@@ -31,7 +31,7 @@ namespace ParkingLotApi.ControllerTest
         {
             // given
             var client = this.GetClient();
-            var content = this.ConvertDtoToStringContent(ParkingLotDtos()[0]).Result;
+            var content = this.ConvertDtoToStringContent(this.ParkingLotDtos()[0]).Result;
 
             // when
             await client.PostAsync("/parkingLots", content);
@@ -55,7 +55,7 @@ namespace ParkingLotApi.ControllerTest
             // then
             var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
             var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
-            Assert.Equal(4, returnParkingLots.Count);
+            Assert.Equal(this.ParkingLotDtos().Count, returnParkingLots.Count);
         }
 
         [Fact]
@@ -72,6 +72,24 @@ namespace ParkingLotApi.ControllerTest
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
             var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponse);
             Assert.Empty(returnParkingLots);
+        }
+
+        [Fact]
+        public async void Should_obtain_X_parking_lots_in_one_page()
+        {
+            // given
+            var client = this.GetClient();
+            await this.PostAsyncParkingLotDtoList(client, this.ParkingLotDtos());
+
+            // when
+            var allParkingLotsResponsePage1 = await client.GetAsync("/parkingLots?pageIndex=1");
+            var allParkingLotsResponsePage2 = await client.GetAsync("/parkingLots?pageIndex=2");
+
+            // then
+            var returnParkingLots = await ConvertResponseToParkingLotDtos(allParkingLotsResponsePage1);
+            Assert.Equal(6, returnParkingLots.Count);
+            var returnParkingLots2 = await ConvertResponseToParkingLotDtos(allParkingLotsResponsePage2);
+            Assert.Empty(returnParkingLots2);
         }
     }
 }

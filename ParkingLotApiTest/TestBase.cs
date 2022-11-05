@@ -40,6 +40,8 @@ namespace ParkingLotApiTest
                 new ParkingLotDto("PL2", 20, "Shanghai"),
                 new ParkingLotDto("PL3", 30, "Wuhan"),
                 new ParkingLotDto("PL4", 40, "Tianjin"),
+                new ParkingLotDto("PL5", 50, "Beijing"),
+                new ParkingLotDto("PL6", 60, "Shanghai"),
             };
             return parkingLotDtos;
         }

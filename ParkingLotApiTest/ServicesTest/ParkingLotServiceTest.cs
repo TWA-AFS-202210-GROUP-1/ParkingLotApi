@@ -44,14 +44,16 @@ namespace ParkingLotApi.ControllerTest
             // given
             var context = GetParkingLotContext();
             var parkingLotService = new ParkingLotService(context);
-            await parkingLotService.AddParkingLot(ParkingLotDtos()[0]);
-            await parkingLotService.AddParkingLot(ParkingLotDtos()[1]);
+            foreach (var parkingLotDto in ParkingLotDtos())
+            {
+                await parkingLotService.AddParkingLot(parkingLotDto);
+            }
 
             // when
-            await parkingLotService.GetAllParkingLot();
+            var parkingLotDtos = await parkingLotService.GetAllParkingLot();
 
             // then
-            Assert.Equal(2, context.ParkingLots.Count());
+            Assert.Equal(this.ParkingLotDtos().Count, parkingLotDtos.Count());
         }
 
         [Fact]
@@ -69,6 +71,27 @@ namespace ParkingLotApi.ControllerTest
             // then
             Assert.Equal(1, context.ParkingLots.Count());
             Assert.Equal(ParkingLotDtos()[1].Name, context.ParkingLots.ToList()[0].Name);
+        }
+
+
+        [Fact]
+        public async Task Should_get_parking_lots_by_range_via_parking_lot_service()
+        {
+            // given
+            var context = GetParkingLotContext();
+            var parkingLotService = new ParkingLotService(context);
+            foreach (var parkingLotDto in ParkingLotDtos())
+            {
+                await parkingLotService.AddParkingLot(parkingLotDto);
+            }
+
+            // when
+            var parkingLotByRangePage1 = await parkingLotService.GetParkingLotByRange(pageIndex: 1);
+            var parkingLotByRangePage2 = await parkingLotService.GetParkingLotByRange(pageIndex: 2);
+
+            // then
+            Assert.Equal(6, parkingLotByRangePage1.Count());
+            Assert.Empty(parkingLotByRangePage2);
         }
     }
 }

@@ -21,21 +21,29 @@ namespace ParkingLotApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParkingLotDto>> Add(ParkingLotDto parkingLotDto)
         {
-            var id = await parkingLotService.AddParkingLot(parkingLotDto);
+            var id = await this.parkingLotService.AddParkingLot(parkingLotDto);
             return Created($"/parkingLots/{id}", id);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> GetAll()
+        public async Task<ActionResult<List<ParkingLotDto>>> GetAllParkingLots([FromQuery] int? pageIndex)
         {
-            var companyDtos = await parkingLotService.GetAllParkingLot();
-            return Ok(companyDtos);
+            if (pageIndex == null)
+            {
+                var parkingLotDto = await this.parkingLotService.GetAllParkingLot();
+                return Ok(parkingLotDto);
+            }
+            else
+            {
+                var parkingLotDtos = await this.parkingLotService.GetParkingLotByRange(pageIndex.Value);
+                return Ok(parkingLotDtos);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<int>> Delete([FromRoute] int id)
         {
-            await parkingLotService.DeleteParkingLot(id);
+            await this.parkingLotService.DeleteParkingLot(id);
             return NoContent();
         }
     }
