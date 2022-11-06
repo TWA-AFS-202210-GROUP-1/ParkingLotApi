@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Enumeration;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -36,9 +37,10 @@ namespace ParkingLotApi.Services
             {
                 await this.parkingLotContext.ParkingOrders.AddAsync(parkingOrderEntity);
                 await this.parkingLotContext.SaveChangesAsync();
+                return parkingOrderEntity.Id;
             }
 
-            return parkingOrderEntity.Id;
+            throw new Exception(Const.OrderStatus.FailMessage);
         }
 
         public async Task<List<ParkingOrderDto>> GetAllParkingOrder()

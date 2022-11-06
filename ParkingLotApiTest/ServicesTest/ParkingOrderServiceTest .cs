@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -97,6 +98,26 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             Assert.Equal(OrderStatus.Close, modifiedParkingLotDto.OrderStatus);
+        }
+
+        [Fact]
+        public async Task Should_throw_exception_when_parking_lot_is_full_given_extra_order()
+        {
+            // given
+            var context = GetParkingLotContext();
+            var parkingLotService = new ParkingLotService(context);
+
+            var parkingLotDto = new ParkingLotDto("PL1", 1, "Beijing");
+            await parkingLotService.AddParkingLot(parkingLotDto);
+
+            var parkingOrderService = new ParkingOrderService(context);
+            await parkingOrderService.AddParkingOrder(this.ParkingOrderDtos()[0]);
+
+            // when // then
+            var exception = await Assert.ThrowsAsync<Exception>(async ()
+                => await parkingOrderService.AddParkingOrder(this.ParkingOrderDtos()[1]));
+
+            Assert.Equal(OrderStatus.FailMessage, exception.Message);
         }
     }
 }
