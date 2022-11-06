@@ -11,12 +11,13 @@ namespace ParkingLotApi.Services
   public class ParkingLotService : IParkingLotService
   {
     private readonly ParkingLotDbContext parkingLotDbContext;
-    private readonly int pageSize = 15;
 
     public ParkingLotService(ParkingLotDbContext parkingLotDbContext)
     {
       this.parkingLotDbContext = parkingLotDbContext;
     }
+
+    public static int PageSize { get; private set; } = 15;
 
     public async Task<int> AddParkingLot(ParkingLotDto parkingLotDto)
     {
@@ -54,8 +55,8 @@ namespace ParkingLotApi.Services
 
       return parkingLots
         .Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity))
-        .Skip((pageIndex - 1) * pageSize)
-        .Take(pageSize)
+        .Skip((pageIndex - 1) * PageSize)
+        .Take(PageSize)
         .ToList();
     }
 

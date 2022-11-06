@@ -1,5 +1,6 @@
 ﻿using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
+using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
 using System;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace ParkingLotApi.Services
       var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLot);
       if (parkingLot != null)
       {
+        if (!IsAvailable(parkingLot))
+        {
+          throw new ParkingLotFullException("The parking lot is full", HttpStatusCode.Conflict);
+        }
+
         var parkingOrderEntity = parkingOrderDto.ToEntity();
         parkingLot.ParkingOrders.Add(parkingOrderEntity);
         await parkingLotDbContext.ParkingOrders.AddAsync(parkingOrderEntity);
@@ -51,6 +57,13 @@ namespace ParkingLotApi.Services
       await parkingLotDbContext.SaveChangesAsync();
 
       return new ParkingOrderDto(parkingOrder);
+    }
+
+    private bool IsAvailable(ParkingLotEntity parkingLot)
+    {
+      var openOrderCount = parkingLot.ParkingOrders.FindAll(parkingOrder => parkingOrder.Status == OrderStatus.Open).Count;
+
+      return openOrderCount < parkingLot.Capacity;
     }
   }
 }

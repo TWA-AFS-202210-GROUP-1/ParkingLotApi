@@ -2,6 +2,7 @@ using ParkingLotApi.Dtos;
 using ParkingLotApiTest.Services;
 using System.Net;
 using System.Collections.Generic;
+using ParkingLotApi.Services;
 
 namespace ParkingLotApiTest.ControllerTest
 {
@@ -76,12 +77,16 @@ namespace ParkingLotApiTest.ControllerTest
       await TestService.PostDtoList(httpClient, "/parking-lots", parkingLotDtos);
 
       // when
-      var response = await httpClient.GetAsync("/parking-lots?page=1");
+      var responsePage1 = await httpClient.GetAsync("/parking-lots?page=1");
+      var responsePage2 = await httpClient.GetAsync("/parking-lots?page=2");
 
       // then
-      var returnedDtos = await TestService.GetResponseContents<List<ParkingLotDto>>(response);
-      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-      Assert.Equal(15, returnedDtos?.Count);
+      var returnedDtosPage1 = await TestService.GetResponseContents<List<ParkingLotDto>>(responsePage1);
+      var returnedDtosPage2 = await TestService.GetResponseContents<List<ParkingLotDto>>(responsePage2);
+      Assert.Equal(HttpStatusCode.OK, responsePage1.StatusCode);
+      Assert.Equal(HttpStatusCode.OK, responsePage2.StatusCode);
+      Assert.Equal(ParkingLotService.PageSize, returnedDtosPage1?.Count);
+      Assert.Equal(parkingLotDtos.Count - ParkingLotService.PageSize, returnedDtosPage2?.Count);
     }
 
     [Fact]
