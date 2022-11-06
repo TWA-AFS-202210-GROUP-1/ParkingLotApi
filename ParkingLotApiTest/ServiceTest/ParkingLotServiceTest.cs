@@ -29,9 +29,8 @@ namespace ParkingLotApiTest.ControllerTest
             // given
             var context = GetParkingLotDbContext();
             IParkingLotService parkingLotService = new ParkingLotService(context);
-            ParkingLotDto parkingLotDto = PrepareAddParkingLotDto();
             // when
-            await parkingLotService.AddParkingLot(parkingLotDto);
+            await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
 
             // then
             Assert.Equal(1, context.ParkingLots.Count());
@@ -43,9 +42,7 @@ namespace ParkingLotApiTest.ControllerTest
             // given
             var context = GetParkingLotDbContext();
             IParkingLotService parkingLotService = new ParkingLotService(context);
-            ParkingLotDto parkingLotDto = PrepareAddParkingLotDto();
-            // when
-            var id = await parkingLotService.AddParkingLot(parkingLotDto);
+            var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
             // when
             var targetParkingLotDto = await parkingLotService.GetById(id);
 
@@ -57,41 +54,29 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_get_all_parkingLots_success_via_parkingLot_service()
         {
             // given
-            // given
             var context = GetParkingLotDbContext();
             IParkingLotService parkingLotService = new ParkingLotService(context);
-            ParkingLotDto parkingLotDto = PrepareAddParkingLotDto();
-            var id = await parkingLotService.AddParkingLot(parkingLotDto);
+            TestData.ParkingLotDtos.ForEach(async d => await parkingLotService.AddParkingLot(d));
             //when
             List<ParkingLotDto> targetParkingLots = await parkingLotService.GetAll();
             //then
             Assert.Equal("park1", targetParkingLots[0].Name);
-            Assert.Equal(1, targetParkingLots.Count);
+            Assert.Equal(4, targetParkingLots.Count);
         }
 
-        //[Fact]
-        //public async Task Should_delete_a_company_by_id_success_via_company_service()
-        //{
-        //    // given
-        //    var context = GetCompanyDbContext();
-        //    CompanyService companyService = new CompanyService(context);
-        //    var companiesIds = PrepareCompaniesDto(companyService);
-        //    //when
-        //    await companyService.DeleteCompany(await companiesIds[0]);
-        //    //then
-        //    Assert.Equal(1, context.Companies.Count());
-        //}
-
-        private ParkingLotDto PrepareAddParkingLotDto()
+        [Fact]
+        public async Task Should_delete_a_parkingLot_by_id_success_via_parkingLot_service()
         {
-            ParkingLotDto parkingLotDto = new ParkingLotDto
-            {
-                Name = "park1",
-                Capacity = 10,
-                Location = "Chaoyang",
-            };
-            return parkingLotDto;
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
+            //when
+            await parkingLotService.deleteParkingLot(id);
+            //then
+            Assert.Equal(0, context.ParkingLots.Count());
         }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();
