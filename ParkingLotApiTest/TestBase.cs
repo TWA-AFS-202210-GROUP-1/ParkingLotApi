@@ -28,6 +28,7 @@ namespace ParkingLotApiTest
             var scopedServices = scope.ServiceProvider;
             var context = scopedServices.GetRequiredService<ParkingLotContext>();
 
+            context.ParkingOrders.RemoveRange(context.ParkingOrders);
             context.ParkingLots.RemoveRange(context.ParkingLots);
             context.SaveChanges();
         }
@@ -44,6 +45,17 @@ namespace ParkingLotApiTest
                 new ParkingLotDto("PL6", 60, "Shanghai"),
             };
             return parkingLotDtos;
+        }
+
+        protected List<ParkingOrderDto> ParkingOrderDtos()
+        {
+            var parkingOrderDtos = new List<ParkingOrderDto>()
+            {
+                new ParkingOrderDto("PL1", "A1234", DateTime.Now, DateTime.Now),
+                new ParkingOrderDto("PL2", "B1234", DateTime.Now, DateTime.Now),
+                new ParkingOrderDto("PL3", "C1234", DateTime.Now, DateTime.Now),
+            };
+            return parkingOrderDtos;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ParkingLotApi.Models;
+using ParkingLotApi.Services;
 
 namespace ParkingLotApi.Dtos
 {

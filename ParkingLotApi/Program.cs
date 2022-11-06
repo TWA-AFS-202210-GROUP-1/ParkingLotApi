@@ -14,8 +14,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ParkingLotService>();
 builder.Services.AddScoped<IParkingLotService, ParkingLotService>();
+builder.Services.AddScoped<IParkingOrderService, ParkingOrderService>();
 builder.Services.AddDbContext<ParkingLotContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Default");

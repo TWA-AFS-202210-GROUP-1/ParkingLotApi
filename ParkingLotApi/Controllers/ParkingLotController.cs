@@ -8,12 +8,12 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace ParkingLotApi.Controllers
 {
     [ApiController]
-    [Route("parkingLots")]
+    [Route("parkinglots")]
     public class ParkingLotController: ControllerBase
     {
         private readonly IParkingLotService parkingLotService;
 
-        public ParkingLotController(ParkingLotService parkingLotService)
+        public ParkingLotController(IParkingLotService parkingLotService)
         {
             this.parkingLotService = parkingLotService;
         }
@@ -22,7 +22,7 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<ParkingLotDto>> Add(ParkingLotDto parkingLotDto)
         {
             var id = await this.parkingLotService.AddParkingLot(parkingLotDto);
-            return Created($"/parkingLots/{id}", id);
+            return Created($"/parkinglots/{id}", id);
         }
 
         [HttpGet]

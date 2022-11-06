@@ -28,17 +28,17 @@ namespace ParkingLotApiTest
             return Factory.CreateClient();
         }
 
-        protected async Task<StringContent> ConvertDtoToStringContent(ParkingLotDto parkingLotDto)
+        protected async Task<StringContent> ConvertDtoToStringContent<T>(T t)
         {
-            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            var httpContent = JsonConvert.SerializeObject(t);
             var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             return content;
         }
 
         protected async Task<HttpResponseMessage> PostAsyncParkingLotDto(HttpClient client, ParkingLotDto parkingLotDto)
         {
-            var content = this.ConvertDtoToStringContent(this.ParkingLotDtos()[0]).Result;
-            return await client.PostAsync("/parkingLots", content);
+            var content = this.ConvertDtoToStringContent(parkingLotDto).Result;
+            return await client.PostAsync("/parkinglots", content);
         }
 
         protected async Task PostAsyncParkingLotDtoList(HttpClient client, List<ParkingLotDto> parkingLotDtos)
@@ -49,11 +49,11 @@ namespace ParkingLotApiTest
             }
         }
 
-        protected static async Task<T> ConvertResponseToParkingLotDtos<T>(HttpResponseMessage allParkingLotsResponse)
+        protected static async Task<T> DeserializeHttpResponse<T>(HttpResponseMessage httpResponse)
         {
-            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<T>(body);
-            return returnParkingLots;
+            var body = await httpResponse.Content.ReadAsStringAsync();
+            var response = JsonConvert.DeserializeObject<T>(body);
+            return response;
         }
 
     }

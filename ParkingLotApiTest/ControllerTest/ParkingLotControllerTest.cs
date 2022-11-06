@@ -35,11 +35,11 @@ namespace ParkingLotApi.ControllerTest
             var content = this.ConvertDtoToStringContent(this.ParkingLotDtos()[0]).Result;
 
             // when
-            await client.PostAsync("/parkingLots", content);
+            await client.PostAsync("/parkinglots", content);
 
             // then
-            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
+            var allParkingLotsResponse = await client.GetAsync("/parkinglots");
+            var returnParkingLots = await DeserializeHttpResponse<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Single(returnParkingLots);
         }
 
@@ -51,11 +51,10 @@ namespace ParkingLotApi.ControllerTest
             await this.PostAsyncParkingLotDtoList(client, this.ParkingLotDtos());
 
             // when
-            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
+            var allParkingLotsResponse = await client.GetAsync("/parkinglots");
 
             // then
-            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
+            var returnParkingLots = await DeserializeHttpResponse<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Equal(this.ParkingLotDtos().Count, returnParkingLots.Count);
         }
 
@@ -70,8 +69,8 @@ namespace ParkingLotApi.ControllerTest
             await client.DeleteAsync(response.Headers.Location);
 
             // then
-            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponse);
+            var allParkingLotsResponse = await client.GetAsync("/parkinglots");
+            var returnParkingLots = await DeserializeHttpResponse<List<ParkingLotDto>>(allParkingLotsResponse);
             Assert.Empty(returnParkingLots);
         }
 
@@ -83,13 +82,13 @@ namespace ParkingLotApi.ControllerTest
             await this.PostAsyncParkingLotDtoList(client, this.ParkingLotDtos());
 
             // when
-            var allParkingLotsResponsePage1 = await client.GetAsync("/parkingLots?pageIndex=1");
-            var allParkingLotsResponsePage2 = await client.GetAsync("/parkingLots?pageIndex=2");
+            var allParkingLotsResponsePage1 = await client.GetAsync("/parkinglots?pageIndex=1");
+            var allParkingLotsResponsePage2 = await client.GetAsync("/parkinglots?pageIndex=2");
 
             // then
-            var returnParkingLots = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponsePage1);
+            var returnParkingLots = await DeserializeHttpResponse<List<ParkingLotDto>>(allParkingLotsResponsePage1);
             Assert.Equal(6, returnParkingLots.Count);
-            var returnParkingLots2 = await ConvertResponseToParkingLotDtos<List<ParkingLotDto>>(allParkingLotsResponsePage2);
+            var returnParkingLots2 = await DeserializeHttpResponse<List<ParkingLotDto>>(allParkingLotsResponsePage2);
             Assert.Empty(returnParkingLots2);
         }
 
@@ -105,7 +104,7 @@ namespace ParkingLotApi.ControllerTest
             var parkingLotResponse = await client.GetAsync(response.Headers.Location);
 
             // then
-            var returnParkingLot = await ConvertResponseToParkingLotDtos<ParkingLotDto>(parkingLotResponse);
+            var returnParkingLot = await DeserializeHttpResponse<ParkingLotDto>(parkingLotResponse);
             Assert.Equal(this.ParkingLotDtos()[0].Name, returnParkingLot.Name);
         }
 
@@ -125,7 +124,7 @@ namespace ParkingLotApi.ControllerTest
 
             // then
             var parkingLotResponse = await client.GetAsync(response.Headers.Location);
-            var returnParkingLot = await ConvertResponseToParkingLotDtos<ParkingLotDto>(parkingLotResponse);
+            var returnParkingLot = await DeserializeHttpResponse<ParkingLotDto>(parkingLotResponse);
             Assert.Equal(this.ParkingLotDtos()[0].Name, returnParkingLot.Name);
             Assert.Equal(100, returnParkingLot.Capacity);
         }
