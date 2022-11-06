@@ -39,5 +39,10 @@ namespace ParkingLotApi.Dtos
         Status = Status,
       };
     }
+
+    public override string ToString()
+    {
+      return $"Parking lot: {ParkingLot}\r\nPlate number: {PlateNumber}\r\nCreation time: {CreationTime}\r\nClose time: {CloseTime}\r\nStatus: {Status}";
+    }
   }
 }

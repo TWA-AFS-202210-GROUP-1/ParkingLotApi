@@ -3,7 +3,6 @@ using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
 using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,6 +23,7 @@ namespace ParkingLotApi.Services
       var parkingLot = parkingLotDbContext.ParkingLots
         .Include(parkingLot => parkingLot.ParkingOrders)
         .FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLot);
+
       if (parkingLot != null)
       {
         if (!IsAvailable(parkingLot))
@@ -46,14 +46,14 @@ namespace ParkingLotApi.Services
 
     public ParkingOrderDto GetById(int id)
     {
-      var parkingOrder = parkingLotDbContext.ParkingOrders.FirstOrDefault(parkingOrder => parkingOrder.Id == id);
+      var parkingOrder = FindParkingOrderEntityById(id);
 
       return new ParkingOrderDto(parkingOrder);
     }
 
     public async Task<ParkingOrderDto> UpdateStatus(int id, ParkingOrderDto newParkingOrderDto)
     {
-      var parkingOrder = parkingLotDbContext.ParkingOrders.FirstOrDefault(parkingOrder => parkingOrder.Id == id);
+      var parkingOrder = FindParkingOrderEntityById(id);
       parkingOrder.Status = newParkingOrderDto.Status;
       parkingOrder.CloseTime = newParkingOrderDto.CloseTime;
       parkingLotDbContext.ParkingOrders.Update(parkingOrder);
@@ -64,17 +64,21 @@ namespace ParkingLotApi.Services
 
     private static bool IsAvailable(ParkingLotEntity parkingLot)
     {
-      if (parkingLot.ParkingOrders != null)
-      {
-        var openOrderCount = parkingLot.ParkingOrders.FindAll(parkingOrder => parkingOrder.Status == OrderStatus.Open).Count;
+      var openOrderCount = parkingLot.ParkingOrders.FindAll(parkingOrder => parkingOrder.Status == OrderStatus.Open).Count;
 
-        return openOrderCount < parkingLot.Capacity;
-      }
-      else
+      return openOrderCount < parkingLot.Capacity;
+    }
+
+    private ParkingOrderEntity FindParkingOrderEntityById(int id)
+    {
+      var parkingOrder = parkingLotDbContext.ParkingOrders.FirstOrDefault(parkingOrder => parkingOrder.Id == id);
+
+      if (parkingOrder == null)
       {
-        parkingLot.ParkingOrders = new List<ParkingOrderEntity>();
-        return true;
+        throw new ParkingOrderNotFoundException($"Found no parking order with id: {id}.", HttpStatusCode.NotFound);
       }
+
+      return parkingOrder;
     }
   }
 }
