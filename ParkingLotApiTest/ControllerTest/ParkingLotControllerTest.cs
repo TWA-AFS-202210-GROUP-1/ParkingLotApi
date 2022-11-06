@@ -117,6 +117,34 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal("Somewhere New", returnParkingLotDto.ParkingLotLocation);
         }
 
+        [Fact]
+        public async Task Should_update_one_parking_lot_capacity_when_call_update_given_parking_lot_new_capacity()
+        {
+            // given
+            var client = GetClient();
+            var createParkingLotResponse = await PrepareNewData(client);
+            string parkingLotName = "NO.New";
+            int parkingLotCapacity = 100;
+            string parkingLotLocation = "Somewhere New";
+            ParkingLotDto parkingLotDto = new ParkingLotDto()
+            {
+                ParkingLotName = parkingLotName,
+                ParkingLotCapacity = parkingLotCapacity,
+                ParkingLotLocation = parkingLotLocation,
+            };
+            var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            // when
+            var getParkingLotsByIdResponse = await client.PostAsync(createParkingLotResponse.Headers.Location, parkingLotContent);
+            var responseBody = await getParkingLotsByIdResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, getParkingLotsByIdResponse.StatusCode);
+            Assert.Equal(100, returnParkingLotDto.ParkingLotCapacity);
+        }
+
         static async Task PrepareMultiData(HttpClient client)
         {
             int dataNumberToprepare = 50;

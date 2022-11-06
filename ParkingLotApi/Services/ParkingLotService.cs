@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
@@ -57,6 +58,21 @@ namespace ParkingLotApi.Services
             var parkingLotEntity = await this._parkingLotDbContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
             _parkingLotDbContext.ParkingLots.Remove(parkingLotEntity);
             await _parkingLotDbContext.SaveChangesAsync();
+        }
+
+        public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotById(int parkingLotId, ParkingLotDto parkingLotDto)
+        {
+            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
+            if (parkingLotEntity != null)
+            {
+                parkingLotEntity.ParkingLotCapacity = parkingLotDto.ParkingLotCapacity;
+                _parkingLotDbContext.SaveChangesAsync();
+                return new ParkingLotDto(parkingLotEntity);
+            }
+            else
+            {
+                return new NotFoundResult();
+            }
         }
     }
 }
