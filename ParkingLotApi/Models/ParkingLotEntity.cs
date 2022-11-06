@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ParkingLotApi.Models
 {
-    public class ParkingLotEntity
+    public class ParkingLot
     {
-        public ParkingLotEntity()
+        public ParkingLot()
         {
         }
 
@@ -16,5 +18,7 @@ namespace ParkingLotApi.Models
         public int ParkingLotCapacity { get; set; }
 
         public string ParkingLotLocation { get; set; }
+
+        public List<Order>? OrdersListEntity { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+
+
+using Microsoft.EntityFrameworkCore;
 using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Repository
@@ -10,9 +13,23 @@ namespace ParkingLotApi.Repository
         {
         }
 
-        public DbSet<ParkingLotEntity> ParkingLots
+        public DbSet<ParkingLot> ParkingLots
         {
             get; set;
         }
+
+        public DbSet<Order> Orders
+        {
+            get; set;
+        }
+
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<ParkingLotContext>()
+        //           .HasOptional(j => j.Orders)
+        //           .WithMany()
+        //           .WillCascadeOnDelete(true);
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }

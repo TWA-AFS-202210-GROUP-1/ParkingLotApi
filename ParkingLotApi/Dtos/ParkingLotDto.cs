@@ -1,15 +1,18 @@
 ﻿using ParkingLotApi.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace ParkingLotApi.Dtos
 {
     public class ParkingLotDto
     {
-        public ParkingLotDto(ParkingLotEntity parkingLotEntity)
+        public ParkingLotDto(ParkingLot parkingLotEntity)
         {
             this.ParkingLotName = parkingLotEntity.ParkingLotName;
             this.ParkingLotCapacity = parkingLotEntity.ParkingLotCapacity;
             this.ParkingLotLocation = parkingLotEntity.ParkingLotLocation;
+            this.OrdersList = parkingLotEntity.OrdersListEntity.Select(orderEntity => new OrderDto(orderEntity)).ToList();
         }
 
         public ParkingLotDto()
@@ -22,13 +25,16 @@ namespace ParkingLotApi.Dtos
 
         public string ParkingLotLocation { get; set; }
 
-        public ParkingLotEntity ToParkingLotEntity()
+        public List<OrderDto>? OrdersList { get; set; }
+
+        public ParkingLot ToParkingLotEntity()
         {
-            return new ParkingLotEntity()
+            return new ParkingLot()
             {
                 ParkingLotName = this.ParkingLotName,
                 ParkingLotCapacity = this.ParkingLotCapacity,
                 ParkingLotLocation = this.ParkingLotLocation,
+                OrdersListEntity = OrdersList?.Select(OrderDto => OrderDto.ToOrderEntity()).ToList(),
             };
         }
     }

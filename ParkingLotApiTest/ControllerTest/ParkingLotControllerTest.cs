@@ -10,6 +10,8 @@ namespace ParkingLotApiTest.ControllerTest
     using Microsoft.AspNetCore.Mvc.Testing;
     using Newtonsoft.Json;
     using ParkingLotApi.Dtos;
+    using ParkingLotApi.Models;
+    using ParkingLotApi.Repository;
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
@@ -136,7 +138,7 @@ namespace ParkingLotApiTest.ControllerTest
             StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             // when
-            var getParkingLotsByIdResponse = await client.PostAsync(createParkingLotResponse.Headers.Location, parkingLotContent);
+            var getParkingLotsByIdResponse = await client.PatchAsync(createParkingLotResponse.Headers.Location, parkingLotContent);
             var responseBody = await getParkingLotsByIdResponse.Content.ReadAsStringAsync();
             var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
 
@@ -144,6 +146,26 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.OK, getParkingLotsByIdResponse.StatusCode);
             Assert.Equal(100, returnParkingLotDto.ParkingLotCapacity);
         }
+
+        [Fact]
+        public async Task Should_create_one_order_capacity_when_car_in_given_car_plate_and_time()
+        {
+            // given
+            var client = GetClient();
+            var createParkingLotResponse = await PrepareNewData(client);
+            Car newCar = new Car(carPlateNumber: "666");
+
+            // when
+            HttpResponseMessage createOrderResponse = await newCar.Parking(client, createParkingLotResponse);
+            var createOrderResponseBody = await createOrderResponse.Content.ReadAsStringAsync();
+            // then
+            var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
+            var getParkingLotByIdResponseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, createOrderResponse.StatusCode);
+            Assert.Equal(createOrderResponseBody, getParkingLotByIdResponseBody);
+
+        }
+
 
         static async Task PrepareMultiData(HttpClient client)
         {

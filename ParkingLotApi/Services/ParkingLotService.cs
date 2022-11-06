@@ -26,7 +26,7 @@ namespace ParkingLotApi.Services
                 throw new ArgumentException("Capacity Invalid");
             }
 
-            ParkingLotEntity parkingLotEntity = parkingLotDto.ToParkingLotEntity();
+            ParkingLot parkingLotEntity = parkingLotDto.ToParkingLotEntity();
 
             await _parkingLotDbContext.ParkingLots.AddAsync(parkingLotEntity);
             await _parkingLotDbContext.SaveChangesAsync();
@@ -49,24 +49,35 @@ namespace ParkingLotApi.Services
 
         public async Task<ParkingLotDto> GetParkingLotById(int parkingLotId)
         {
-            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
+            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots
+                .Include(parkingLot => parkingLot.OrdersListEntity)
+                .FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
             return new ParkingLotDto(parkingLotEntity);
         }
 
         public async Task DeleteParkingLotById(int parkingLotId)
         {
-            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
+            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots
+                .FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
+            //_parkingLotDbContext.Orders.Remove(parkingLotEntity.OrdersListEntity);
             _parkingLotDbContext.ParkingLots.Remove(parkingLotEntity);
             await _parkingLotDbContext.SaveChangesAsync();
         }
 
         public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotById(int parkingLotId, ParkingLotDto parkingLotDto)
         {
-            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
+            var parkingLotEntity = await this._parkingLotDbContext.ParkingLots
+                .Include(parkingLot => parkingLot.OrdersListEntity)
+                .FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
             if (parkingLotEntity != null)
             {
                 parkingLotEntity.ParkingLotCapacity = parkingLotDto.ParkingLotCapacity;
-                _parkingLotDbContext.SaveChangesAsync();
+                parkingLotEntity.OrdersListEntity.Clear();
+                parkingLotEntity.OrdersListEntity.AddRange(parkingLotDto.OrdersList
+                    .Select(orderDto => orderDto.ToOrderEntity()).ToList());
+                //parkingLotEntity.OrdersListEntity = parkingLotDto.OrdersList
+                //    .Select(orderDto => orderDto.ToOrderEntity()).ToList();
+                _parkingLotDbContext.SaveChanges();
                 return new ParkingLotDto(parkingLotEntity);
             }
             else
