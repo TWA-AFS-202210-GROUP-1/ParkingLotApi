@@ -39,17 +39,31 @@ namespace ParkingLotApi.Controllers
     [HttpGet("{orderId}")]
     public IActionResult GetById([FromRoute] int orderId)
     {
-      var parkingOrderDto = parkingOrderService.GetById(orderId);
+      try
+      {
+        var parkingOrderDto = parkingOrderService.GetById(orderId);
 
-      return Ok(parkingOrderDto);
+        return Ok(parkingOrderDto);
+      }
+      catch (ParkingOrderNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
     }
 
     [HttpPut("{orderId}")]
     public async Task<IActionResult> UpdateOrderStatus([FromRoute] int orderId, ParkingOrderDto parkingOrderDto)
     {
-      var updatedParkingOrderDto = await parkingOrderService.UpdateStatus(orderId, parkingOrderDto);
+      try
+      {
+        var updatedParkingOrderDto = await parkingOrderService.UpdateStatus(orderId, parkingOrderDto);
 
-      return Ok(updatedParkingOrderDto);
+        return Ok(updatedParkingOrderDto);
+      }
+      catch (ParkingOrderNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
     }
   }
 }
