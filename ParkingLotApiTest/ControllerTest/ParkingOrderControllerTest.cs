@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using ParkingLotApi.Dtos;
@@ -76,6 +77,28 @@ namespace ParkingLotApi.ControllerTest
             Assert.Equal("A1234", returnParkingOrder.PlateNumber);
             Assert.Equal(Const.OrderStatus.Close, returnParkingOrder.OrderStatus);
             Assert.NotEqual(dateTime, returnParkingOrder.CloseTime);
+        }
+
+        [Fact]
+        public async Task Should_throw_exception_when_parking_lot_is_full()
+        {
+            // given
+            var client = this.GetClient();
+            var parkingLot = new ParkingLotDto("Parking Lot NO.1", 1, "Beijing");
+            await this.PostAsyncParkingLotDto(client, parkingLot);
+
+            var parkingOrderDto = new ParkingOrderDto(parkingLot.Name, "A1234", DateTime.Now, DateTime.Now, Const.OrderStatus.Open);
+            var parkingOrderContent = await this.ConvertDtoToStringContent(parkingOrderDto);
+            await client.PostAsync("/orders", parkingOrderContent);
+
+            var parkingOrderDtoExtra = new ParkingOrderDto(parkingLot.Name, "B1234", DateTime.Now, DateTime.Now, Const.OrderStatus.Open);
+            var parkingOrderExtraContent = await this.ConvertDtoToStringContent(parkingOrderDtoExtra);
+
+            // when
+            var httpResponse = await client.PostAsync("/orders", parkingOrderExtraContent);
+
+            // then
+            Assert.Equal(HttpStatusCode.InternalServerError, httpResponse.StatusCode);
         }
     }
 }
