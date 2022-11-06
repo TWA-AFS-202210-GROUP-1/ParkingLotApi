@@ -10,6 +10,7 @@ namespace ParkingLotApiTest.ControllerTest
     using ParkingLotApi.Repository;
     using ParkingLotApi.Service;
     using ParkingLotApiTest.Dtos;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -38,19 +39,22 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(1, context.ParkingOrders.Count());
         }
 
-        //public async Task Should_create_parkingOrder_success_via_parkingOrder_service()
-        //{
-        //    // given
-        //    var context = GetParkingLotDbContext();
-        //    IParkingLotService parkingLotService = new ParkingLotService(context);
-        //    await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
-        //    IParkingOrderService parkingOrderService = new ParkingOrderService(context);
-        //    // when
-        //    await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[0]);
+        [Fact]
+        public async Task Should_throw_exception_when_create_parkingOrder_success_via_parkingOrder_service_given_lot_isfull()
+        {
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[3]);
+            IParkingOrderService parkingOrderService = new ParkingOrderService(context);
+            // when
+            await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[1]);
+            var err = async() => await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[1]);
+            var res = await Assert.ThrowsAsync<Exception>(err);
 
-        //    // then
-        //    Assert.Equal(1, context.ParkingOrders.Count());
-        //}
+            // then
+            Assert.Equal("The parking lot is full", res.Message);
+        }
 
         //[Fact]
         //public async Task Should_get_parkingLot_byId_success_via_parkingLot_service()
