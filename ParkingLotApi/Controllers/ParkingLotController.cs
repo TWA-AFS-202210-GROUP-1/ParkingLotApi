@@ -37,40 +37,83 @@ namespace ParkingLotApi.Controllers
     {
       if (page == null)
       {
-        var parkingLotDtos = parkingLotService.GetAll();
+        try
+        {
+          var parkingLotDtos = parkingLotService.GetAll();
 
-        return Ok(parkingLotDtos);
+          return Ok(parkingLotDtos);
+        }
+        catch (ParkingLotNotFoundException exception)
+        {
+          return NotFound(exception.Message);
+        }
       }
       else
       {
-        var parkingLotDtos = parkingLotService.GetByPageIndex(page.Value);
+        try
+        {
+          var parkingLotDtos = parkingLotService.GetByPageIndex(page.Value);
 
-        return Ok(parkingLotDtos);
+          return Ok(parkingLotDtos);
+        }
+        catch (ParkingLotNotFoundException exception)
+        {
+          return NotFound(exception.Message);
+        }
+        catch (ParkingLotPageIndexOutOfRangeException exception)
+        {
+          return NotFound(exception.Message);
+        }
       }
     }
 
     [HttpGet("{parkingLotId}")]
     public IActionResult GetById([FromRoute] int parkingLotId)
     {
-      var parkingLotDto = parkingLotService.GetById(parkingLotId);
+      try
+      {
+        var parkingLotDto = parkingLotService.GetById(parkingLotId);
 
-      return Ok(parkingLotDto);
+        return Ok(parkingLotDto);
+      }
+      catch (ParkingLotNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
     }
 
     [HttpPut("{parkingLotId}")]
     public async Task<IActionResult> UpdateParkingLot([FromRoute] int parkingLotId, ParkingLotDto parkingLotDto)
     {
-      var updatedParkingLotDto = await parkingLotService.UpdateCapacity(parkingLotId, parkingLotDto);
+      try
+      {
+        var updatedParkingLotDto = await parkingLotService.UpdateCapacity(parkingLotId, parkingLotDto);
 
-      return Ok(updatedParkingLotDto);
+        return Ok(updatedParkingLotDto);
+      }
+      catch (ParkingLotNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
+      catch (InvalidParkingLotCapacityException exception)
+      {
+        return Conflict(exception.Message);
+      }
     }
 
     [HttpDelete("{parkingLotId}")]
     public async Task<IActionResult> DeleteById([FromRoute] int parkingLotId)
     {
-      await parkingLotService.RemoveParkingLot(parkingLotId);
+      try
+      {
+        await parkingLotService.RemoveParkingLot(parkingLotId);
 
-      return NoContent();
+        return NoContent();
+      }
+      catch (ParkingLotNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
     }
   }
 }
