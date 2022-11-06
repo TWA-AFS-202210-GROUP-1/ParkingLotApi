@@ -20,6 +20,11 @@ namespace ParkingLotApi.Services
 
         public async Task<int> AddParkingLot(ParkingLotDto parkingLotDto)
         {
+            if (parkingLotDto.ParkingLotCapacity < 0)
+            {
+                throw new ArgumentException("Capacity Invalid");
+            }
+
             ParkingLotEntity parkingLotEntity = parkingLotDto.ToParkingLotEntity();
 
             await _parkingLotDbContext.ParkingLots.AddAsync(parkingLotEntity);
@@ -28,9 +33,17 @@ namespace ParkingLotApi.Services
             return parkingLotEntity.ParkingLotId;
         }
 
-        public async Task<List<ParkingLotDto>> GetAllParkingLot()
+        public async Task<IEnumerable<ParkingLotDto>> GetAllParkingLot(int pageIndex)
         {
-            return this._parkingLotDbContext.ParkingLots.Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity)).ToList();
+            var allParkingLots = this._parkingLotDbContext.ParkingLots.Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity)).ToList();
+            if (pageIndex != null)
+            {
+                return allParkingLots.Skip((pageIndex - 1) * 15).Take(15);
+            }
+            else
+            {
+                return allParkingLots;
+            }
         }
 
         public async Task<ParkingLotDto> GetParkingLotById(int parkingLotId)

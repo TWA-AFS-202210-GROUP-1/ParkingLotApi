@@ -22,14 +22,13 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<ParkingLotDto>> AddParkingLot(ParkingLotDto parkingLotDto)
         {
             int parkingLotId = await this._parkingLotService.AddParkingLot(parkingLotDto);
-            //return this.Created("/parkingLots", parkingLotDto);
             return this.Created($"parkingLots/{parkingLotId}", parkingLotDto);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> GetAllParkingLot()
+        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> GetAllParkingLot([FromQuery] int? pageIndex)
         {
-            var parkingLotsList = await this._parkingLotService.GetAllParkingLot();
+            var parkingLotsList = await this._parkingLotService.GetAllParkingLot((int)pageIndex);
             return this.Ok(parkingLotsList);
         }
 

@@ -26,7 +26,6 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            PrepareData(client);
 
             string parkingLotName = "NO.new";
             int parkingLotCapacity = 50;
@@ -56,7 +55,6 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            //PrepareData(client);
 
             // prepare data
             string parkingLotName = "NO.new";
@@ -81,7 +79,26 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.InternalServerError, getParkingLotByIdResponse.StatusCode);
         }
 
-        static async void PrepareData(HttpClient client)
+        [Fact]
+        public async Task Should_return_parking_lot_List_when_call_getAll_given_parking_lot_pageIndex()
+        {
+            // given
+            var client = GetClient();
+            await PrepareData(client);
+            int pageIndex = 2;
+            int maxPageSize = 15;
+
+            // when
+            var getParkingLotsByPageIndexResponse = await client.GetAsync($"parkingLots?pageIndex={pageIndex}");
+            var responseBody = await getParkingLotsByPageIndexResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDtoList = JsonConvert.DeserializeObject<List<ParkingLotDto>>(responseBody);
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, getParkingLotsByPageIndexResponse.StatusCode);
+            Assert.Equal(maxPageSize, returnParkingLotDtoList.Count);
+        }
+
+        static async Task PrepareData(HttpClient client)
         {
             int dataNumberToprepare = 50;
             for (int i = 0; i < dataNumberToprepare; i++)
