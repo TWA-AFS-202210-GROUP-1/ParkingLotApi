@@ -1,4 +1,5 @@
-﻿using ParkingLotApi.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using ParkingLotApi.Model;
 using ParkingLotApi.Repository;
 using ParkingLotApiTest.Dtos;
 using System;
@@ -20,7 +21,7 @@ namespace ParkingLotApi.Service
         public async Task<int> AddParkingOrder(ParkingOrderDto parkingOrderDto)
         {
             ParkingOrderEntity parkingOrderEntity = parkingOrderDto.ToEntity();
-            var targetParkingLot =  this.parkingLotContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLotName);
+            var targetParkingLot =  this.parkingLotContext.ParkingLots.Include(_ => _.ParkingOrders).FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLotName);
             if (isAvailable(targetParkingLot))
             {
                 await this.parkingLotContext.ParkingOrders.AddAsync(parkingOrderEntity);

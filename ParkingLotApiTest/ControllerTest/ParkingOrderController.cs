@@ -34,6 +34,21 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_throw_exception_when_add_parking_order_to_system_give_lot_is_full()
+        {
+            // given
+            var client = GetClient();
+            await AddAparkingLotToDb(client, TestData.ParkingLotDtos[3]);
+            await AddAparkingOrderToDb(client, TestData.ParkingOrderDtos[1]);
+            //then
+            var response = await AddAparkingOrderToDb(client, TestData.ParkingOrderDtos[2]);
+
+            // then
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
         //[Fact]
         //public async Task Should_delete_parking_lot_from_system_successfully()
         //{

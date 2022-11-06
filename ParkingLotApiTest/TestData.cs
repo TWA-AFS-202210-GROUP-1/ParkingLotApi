@@ -32,7 +32,7 @@ namespace ParkingLotApiTest
             new ParkingLotDto
             {
                 Name = "park4",
-                Capacity = 60,
+                Capacity = 1,
                 Location = "Chaoyang4",
             }
         };
@@ -48,7 +48,7 @@ namespace ParkingLotApiTest
             },
             new ParkingOrderDto
             {
-                ParkingLotName = "park2",
+                ParkingLotName = "park4",
                 PlateNumber = "12345",
                 CreationTime = DateTime.Now,
                 CloseTime = DateTime.Now,
@@ -56,11 +56,11 @@ namespace ParkingLotApiTest
             },
             new ParkingOrderDto
             {
-                ParkingLotName = "park1",
+                ParkingLotName = "park4",
                 PlateNumber = "1236",
                 CreationTime = DateTime.Now,
                 CloseTime = DateTime.Now,
-                OrderStatus = false,
+                OrderStatus = true,
             },
         };
     }
