@@ -66,6 +66,32 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(0, returnParkingLots.Count);
         }
 
+
+        [Fact]
+        public async Task Should_return_parking_lots_from_system_successfully_given_index()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto companyDto = new ParkingLotDto
+            {
+                Name = "park1",
+                Capacity = 10,
+                Location = "Chaoyang",
+            };
+            StringContent postBody = SerializeContent(companyDto);
+            var response = await client.PostAsync("/parkingLots", postBody);
+
+            // when
+            var ParkingLotsResponseIndex1 = await client.GetAsync("/parkingLots?pageIndex=1");
+            var returnParkingLots1 = await DeserializeContent<List<ParkingLotDto>>(ParkingLotsResponseIndex1);
+            var ParkingLotsResponseIndex2 = await client.GetAsync("/parkingLots?pageIndex=2");
+            var returnParkingLots2= await DeserializeContent<List<ParkingLotDto>>(ParkingLotsResponseIndex2);
+
+            // then
+            Assert.Equal(1, returnParkingLots1.Count);
+            Assert.Equal(0, returnParkingLots2.Count);
+        }
+
         private static async Task<T> DeserializeContent<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();

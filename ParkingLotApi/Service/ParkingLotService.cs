@@ -10,6 +10,7 @@ namespace ParkingLotApi.Service
     public class ParkingLotService : IParkingLotService
     {
         private readonly ParkingLotContext parkingLotContext;
+        private readonly int pageSize = 15;
 
         public ParkingLotService(ParkingLotContext parkingLotContext)
         {
@@ -31,10 +32,16 @@ namespace ParkingLotApi.Service
             await this.parkingLotContext.SaveChangesAsync();
         }
 
-        public async Task<List<ParkingLotDto>> GetAll()
+        public List<ParkingLotDto> GetAll()
         {
             var parkingLots = this.parkingLotContext.ParkingLots.ToList();
             return parkingLots.Select(parkingLot => new ParkingLotDto(parkingLot)).ToList();
+        }
+
+        public List<ParkingLotDto> GetByPageIndex(int? pageIndex)
+        {
+            var parkingLotsDtos = this.parkingLotContext.ParkingLots.ToList().Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity));
+            return parkingLotsDtos.Skip((pageIndex.Value - 1) * pageSize).Take(pageSize).ToList();
         }
     }
 }

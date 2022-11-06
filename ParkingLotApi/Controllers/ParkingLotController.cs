@@ -17,11 +17,20 @@ public class ParkingLotController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ParkingLotDto>>> GetAllParkingLots()
+    public async Task<ActionResult<List<ParkingLotDto>>> GetAllParkingLots([FromQuery] int? pageIndex)
     {
-        var companyDtos = await this.parkingLotService.GetAll();
+        if(pageIndex == null)
+        {
+            var parkingLotsDtos = this.parkingLotService.GetAll();
 
-        return Ok(companyDtos);
+            return Ok(parkingLotsDtos);
+        }
+        else
+        {
+            var parkingLotsDtos = this.parkingLotService.GetByPageIndex(pageIndex);
+            return Ok(parkingLotsDtos);
+        }
+        
     }
 
     [HttpPost]
