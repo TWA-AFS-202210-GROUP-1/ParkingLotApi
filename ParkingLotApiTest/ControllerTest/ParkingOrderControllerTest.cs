@@ -37,7 +37,7 @@ namespace ParkingLotApi.ControllerTest
             var parkingLot = new ParkingLotDto("Parking Lot NO.1", 10, "Beijing");
             await this.PostAsyncParkingLotDto(client, parkingLot);
 
-            var parkingOrderDto = new ParkingOrderDto(parkingLot.Name, "A1234", DateTime.Now, DateTime.Now);
+            var parkingOrderDto = new ParkingOrderDto(parkingLot.Name, "A1234", DateTime.Now, DateTime.Now, Const.OrderStatus.Open);
             var parkingOrderContent = await this.ConvertDtoToStringContent(parkingOrderDto);
 
             // when
@@ -49,6 +49,33 @@ namespace ParkingLotApi.ControllerTest
             Assert.Single(returnParkingOrder);
             Assert.Equal(parkingLot.Name, returnParkingOrder[0].ParkingLotName);
             Assert.Equal("A1234", returnParkingOrder[0].PlateNumber);
+        }
+
+        [Fact]
+        public async Task Should_update_parking_order_status_and_close_time()
+        {
+            // given
+            var client = this.GetClient();
+            var parkingLot = new ParkingLotDto("Parking Lot NO.1", 10, "Beijing");
+            await this.PostAsyncParkingLotDto(client, parkingLot);
+            var dateTime = DateTime.Now;
+            var parkingOrderDto = new ParkingOrderDto(parkingLot.Name, "A1234", dateTime, dateTime, Const.OrderStatus.Open);
+            var parkingOrderContent = await this.ConvertDtoToStringContent(parkingOrderDto);
+            var response = await client.PostAsync("/orders", parkingOrderContent);
+
+            parkingOrderDto.CloseTime = DateTime.Now;
+            var updateParkingOrderContent = await this.ConvertDtoToStringContent(parkingOrderDto);
+
+            // when
+            await client.PutAsync(response.Headers.Location, updateParkingOrderContent);
+
+            // then
+            var updateParkingOrdersResponse = await client.GetAsync(response.Headers.Location);
+            var returnParkingOrder = await DeserializeHttpResponse<ParkingOrderDto>(updateParkingOrdersResponse);
+            Assert.Equal(parkingLot.Name, returnParkingOrder.ParkingLotName);
+            Assert.Equal("A1234", returnParkingOrder.PlateNumber);
+            Assert.Equal(Const.OrderStatus.Close, returnParkingOrder.OrderStatus);
+            Assert.NotEqual(dateTime, returnParkingOrder.CloseTime);
         }
     }
 }

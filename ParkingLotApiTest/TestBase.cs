@@ -4,6 +4,7 @@ using System;
 using Microsoft.AspNetCore.Mvc.Testing;
 using ParkingLotApi.Repository;
 using ParkingLotApi.Dtos;
+using ParkingLotApi.Const;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Net.Mime;
@@ -51,9 +52,9 @@ namespace ParkingLotApiTest
         {
             var parkingOrderDtos = new List<ParkingOrderDto>()
             {
-                new ParkingOrderDto("PL1", "A1234", DateTime.Now, DateTime.Now),
-                new ParkingOrderDto("PL2", "B1234", DateTime.Now, DateTime.Now),
-                new ParkingOrderDto("PL3", "C1234", DateTime.Now, DateTime.Now),
+                new ParkingOrderDto("PL1", "A1234", DateTime.Now, DateTime.Now, OrderStatus.Open),
+                new ParkingOrderDto("PL1", "B1234", DateTime.Now, DateTime.Now, OrderStatus.Open),
+                new ParkingOrderDto("PL1", "C1234", DateTime.Now, DateTime.Now, OrderStatus.Open),
             };
             return parkingOrderDtos;
         }

@@ -46,5 +46,23 @@ namespace ParkingLotApi.Services
             var parkingOrders = this.parkingLotContext.ParkingOrders.ToList();
             return parkingOrders.Select(parkingOrderEntity => new ParkingOrderDto(parkingOrderEntity)).ToList();
         }
+
+        public async Task<ParkingOrderDto?> GetById(int id)
+        {
+            var findParkingOrder = await this.parkingLotContext.ParkingOrders
+                .FirstOrDefaultAsync(parkingOrder => parkingOrder.Id == id);
+            return new ParkingOrderDto(findParkingOrder);
+        }
+
+        public async Task<ParkingOrderDto> UpdateParkingLot(int id, ParkingOrderDto parkingOrderDto)
+        {
+            var findParkingOrder = await this.parkingLotContext.ParkingOrders
+                .FirstOrDefaultAsync(parkingOrder => parkingOrder.Id == id);
+            findParkingOrder.OrderStatus = Const.OrderStatus.Close;
+            findParkingOrder.CloseTime = parkingOrderDto.CloseTime;
+            this.parkingLotContext.ParkingOrders.Update(findParkingOrder);
+            await this.parkingLotContext.SaveChangesAsync();
+            return new ParkingOrderDto(findParkingOrder);
+        }
     }
 }

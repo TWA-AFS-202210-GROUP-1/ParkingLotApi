@@ -31,5 +31,21 @@ namespace ParkingLotApi.Controllers
             var parkingOrderDtos = await this.parkingOrderService.GetAllParkingOrder();
             return Ok(parkingOrderDtos);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ParkingLotDto>> GetParkingOrderById([FromRoute] int id)
+        {
+            var parkingOrderDto = await this.parkingOrderService.GetById(id);
+            return Ok(parkingOrderDto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ParkingOrderDto>> UpdateParkingOrder(
+            [FromRoute] int id,
+            [FromBody]ParkingOrderDto parkingOrderDto)
+        {
+            var updateParkingOrderDto = await this.parkingOrderService.UpdateParkingLot(id, parkingOrderDto);
+            return Ok(updateParkingOrderDto);
+        }
     }
 }

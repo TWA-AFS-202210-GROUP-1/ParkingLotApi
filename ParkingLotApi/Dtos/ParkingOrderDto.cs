@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Components.Web;
 using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Dtos
@@ -11,13 +12,13 @@ namespace ParkingLotApi.Dtos
         }
 
         public ParkingOrderDto(string parkingLotName, string plateNumber,
-            DateTime createTime, DateTime closeTime)
+            DateTime createTime, DateTime closeTime, bool orderStatus)
         {
             this.ParkingLotName = parkingLotName;
             this.PlateNumber = plateNumber;
             this.CreateTime = createTime;
             this.CloseTime = closeTime;
-            this.OrderStatus = false;
+            this.OrderStatus = orderStatus;
         }
 
         public ParkingOrderDto(ParkingOrderEntity parkingOrderEntity)
