@@ -156,5 +156,97 @@ namespace ParkingLotApiTest.ServiceTests
       Assert.Equal($"There is(are) only 2 page(s).", exception.Message);
       Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
     }
+
+    [Fact]
+    public async void Should_change_parking_lot_capacity_when_update_given_different_capacity()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+      var newParkingLotDto = new ParkingLotDto(parkingLotDtos[0].Name, 20, parkingLotDtos[0].Location);
+
+      // when
+      var returnedDto = await parkingLotService.UpdateCapacity(id, newParkingLotDto);
+
+      // then
+      Assert.Equal(20, returnedDto.Capacity);
+    }
+
+    [Fact]
+    public async void Should_throw_exception_when_update_given_wrong_id()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+      var newParkingLotDto = new ParkingLotDto(parkingLotDtos[0].Name, 20, parkingLotDtos[0].Location);
+
+      // when
+      var action = async () => { await parkingLotService.UpdateCapacity(id + 1, newParkingLotDto); };
+
+      // then
+      var exception = await Assert.ThrowsAsync<ParkingLotNotFoundException>(action);
+      Assert.Equal($"Found no parking lot with id: {id + 1}.", exception.Message);
+      Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_throw_exception_when_update_given_invalid_capacity()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+      var newParkingLotDto = new ParkingLotDto(parkingLotDtos[0].Name, parkingLotDtos[0].Capacity - 1, parkingLotDtos[0].Location);
+
+      // when
+      var action = async () => { await parkingLotService.UpdateCapacity(id, newParkingLotDto); };
+
+      // then
+      var exception = await Assert.ThrowsAsync<InvalidParkingLotCapacityException>(action);
+      Assert.Equal($"New capacity must not be smaller than the original, which is {parkingLotDtos[0].Capacity}.", exception.Message);
+      Assert.Equal(HttpStatusCode.Conflict, exception.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_delete_parking_lot_when_remove_given_id()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(2, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+      await parkingLotService.AddParkingLot(parkingLotDtos[1]);
+
+      // when
+      await parkingLotService.RemoveParkingLot(id);
+
+      // then
+      var returnedDtos = parkingLotService.GetAll();
+
+      Assert.Single(returnedDtos);
+    }
+
+    [Fact]
+    public async void Should_throw_exception_when_remove_given_wrong_id()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+
+      // when
+      var action = async () => { await parkingLotService.RemoveParkingLot(id + 1); };
+
+      // then
+      var exception = await Assert.ThrowsAsync<ParkingLotNotFoundException>(action);
+      Assert.Equal($"Found no parking lot with id: {id + 1}.", exception.Message);
+      Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
+    }
   }
 }
