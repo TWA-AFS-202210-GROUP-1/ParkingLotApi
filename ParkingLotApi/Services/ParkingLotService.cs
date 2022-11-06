@@ -1,5 +1,7 @@
-﻿using ParkingLotApi.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
+using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +37,7 @@ namespace ParkingLotApi.Services
 
     public List<ParkingLotDto> GetAll()
     {
-      var parkingLots = parkingLotDbContext.ParkingLots.ToList();
+      var parkingLots = FindAllParkingLotEntities();
 
       return parkingLots
         .Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity))
@@ -44,25 +46,31 @@ namespace ParkingLotApi.Services
 
     public ParkingLotDto GetById(int id)
     {
-      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+      var parkingLot = FindParkingLotEntityById(id);
 
       return new ParkingLotDto(parkingLot);
     }
 
     public List<ParkingLotDto> GetByPageIndex(int pageIndex)
     {
-      var parkingLots = parkingLotDbContext.ParkingLots.ToList();
-
-      return parkingLots
+      var parkingLots = FindAllParkingLotEntities();
+      var pageOfParkingLots = parkingLots
         .Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity))
         .Skip((pageIndex - 1) * PageSize)
         .Take(PageSize)
         .ToList();
+
+      if (pageOfParkingLots.Count == 0)
+      {
+        throw new ParkingLotPageIndexOutOfRangeException($"There is(are) only {pageIndex - 1} page(s).", HttpStatusCode.NotFound);
+      }
+
+      return pageOfParkingLots;
     }
 
     public async Task<ParkingLotDto> UpdateCapacity(int id, ParkingLotDto newParkingLotDto)
     {
-      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+      var parkingLot = FindParkingLotEntityById(id);
       parkingLot.Capacity = newParkingLotDto.Capacity;
       parkingLotDbContext.ParkingLots.Update(parkingLot);
       await parkingLotDbContext.SaveChangesAsync();
@@ -72,7 +80,7 @@ namespace ParkingLotApi.Services
 
     public async Task RemoveParkingLot(int id)
     {
-      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+      var parkingLot = FindParkingLotEntityById(id);
       parkingLotDbContext.ParkingLots.Remove(parkingLot);
       await parkingLotDbContext.SaveChangesAsync();
     }
@@ -82,6 +90,34 @@ namespace ParkingLotApi.Services
       var existingParkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name.Equals(parkingLotDto.Name));
 
       return existingParkingLot != null;
+    }
+
+    private ParkingLotEntity FindParkingLotEntityById(int id)
+    {
+      var parkingLot = parkingLotDbContext.ParkingLots
+        .Include(parkingLot => parkingLot.ParkingOrders)
+        .FirstOrDefault(parkingLot => parkingLot.Id == id);
+
+      if (parkingLot == null)
+      {
+        throw new ParkingLotNotFoundException($"Found no parking lot with id: {id}.", HttpStatusCode.NotFound);
+      }
+
+      return parkingLot;
+    }
+
+    private List<ParkingLotEntity> FindAllParkingLotEntities()
+    {
+      var parkingLots = parkingLotDbContext.ParkingLots
+        .Include(parkingLot => parkingLot.ParkingOrders)
+        .ToList();
+
+      if (parkingLots.Count == 0)
+      {
+        throw new ParkingLotNotFoundException("Found no parking lot.", HttpStatusCode.NotFound);
+      }
+
+      return parkingLots;
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using ParkingLotApi.Exceptions;
+﻿using ParkingLotApi.Dtos;
+using ParkingLotApi.Exceptions;
 using ParkingLotApi.Services;
 using ParkingLotApiTest.Services;
 using System.Linq;
@@ -45,6 +46,115 @@ namespace ParkingLotApiTest.ServiceTests
       var exception = await Assert.ThrowsAsync<DuplicateParkingLotNameException>(action);
       Assert.Equal($"Parking lot name: {parkingLotDtos[0].Name} already exists.", exception.Message);
       Assert.Equal(HttpStatusCode.Conflict, exception.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_return_all_parking_lots_when_get_given_at_least_one_parking_lot_in_database()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+
+      // when
+      var returnedDtos = parkingLotService.GetAll();
+
+      // then
+      Assert.Single(returnedDtos);
+      Assert.Equal(parkingLotDtos[0].ToString(), returnedDtos[0].ToString());
+    }
+
+    [Fact]
+    public void Should_throw_exception_when_get_all_given_no_parking_lot_in_database()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+
+      // when
+      var action = () => { parkingLotService.GetAll(); };
+
+      // then
+      var exception = Assert.Throws<ParkingLotNotFoundException>(action);
+      Assert.Equal("Found no parking lot.", exception.Message);
+      Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_return_right_parking_lot_when_get_by_id_given_at_least_one_parking_lot_in_database()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+
+      // when
+      var returnedDto = parkingLotService.GetById(id);
+
+      // then
+      Assert.Equal(parkingLotDtos[0].ToString(), returnedDto.ToString());
+    }
+
+    [Fact]
+    public async void Should_throw_exception_when_get_by_id_given_wrong_id()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(1, 1);
+      var id = await parkingLotService.AddParkingLot(parkingLotDtos[0]);
+
+      // when
+      var action = () => { parkingLotService.GetById(id + 1); };
+
+      // then
+      var exception = Assert.Throws<ParkingLotNotFoundException>(action);
+      Assert.Equal($"Found no parking lot with id: {id + 1}.", exception.Message);
+      Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_return_right_parking_lots_when_get_by_page_given_20_parking_lots_in_database()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(20, 1);
+
+      foreach (var parkingLotDto in parkingLotDtos)
+      {
+        await parkingLotService.AddParkingLot(parkingLotDto);
+      }
+
+      // when
+      var returnedDtos = parkingLotService.GetByPageIndex(1);
+
+      // then
+      Assert.Equal(ParkingLotService.PageSize, returnedDtos.Count);
+    }
+
+    [Fact]
+    public async void Should_throw_exception_when_get_by_page_given_exceeding_page_index()
+    {
+      // given
+      var dbContext = GetParkingLotDbContext();
+      var parkingLotService = new ParkingLotService(dbContext);
+      var parkingLotDtos = TestService.PrepareParkingLotDtos(16, 1);
+
+      foreach (var parkingLotDto in parkingLotDtos)
+      {
+        await parkingLotService.AddParkingLot(parkingLotDto);
+      }
+
+      // when
+      var action = () => { parkingLotService.GetByPageIndex(3); };
+
+      // then
+      var exception = Assert.Throws<ParkingLotPageIndexOutOfRangeException>(action);
+      Assert.Equal($"There is(are) only 2 page(s).", exception.Message);
+      Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
     }
   }
 }

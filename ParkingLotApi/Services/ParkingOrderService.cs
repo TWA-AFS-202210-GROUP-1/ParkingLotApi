@@ -40,7 +40,7 @@ namespace ParkingLotApi.Services
       }
       else
       {
-        throw new ParkingLotNotFoundException($"Cannot find parking lot named {parkingOrderDto.ParkingLot}.", HttpStatusCode.NotFound);
+        throw new ParkingLotNotFoundException($"Found no parking lot named {parkingOrderDto.ParkingLot}.", HttpStatusCode.NotFound);
       }
     }
 
