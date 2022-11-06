@@ -24,16 +24,8 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            ParkingLotDto parkingLotDto = new ParkingLotDto
-            {
-                Name = "park1",
-                Capacity = 10,
-                Location = "Chaoyang",
-            };
-
-            // when
-            StringContent postBody = SerializeContent(parkingLotDto);
-            await client.PostAsync("/parkingLots", postBody);
+            //then
+            await AddAparkingLotToDb(client);
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
@@ -47,14 +39,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            ParkingLotDto parkingLotDto = new ParkingLotDto
-            {
-                Name = "park1",
-                Capacity = 10,
-                Location = "Chaoyang",
-            };
-            StringContent postBody = SerializeContent(parkingLotDto);
-            var response  = await client.PostAsync("/parkingLots", postBody);
+            HttpResponseMessage response = await AddAparkingLotToDb(client);
 
             // when
             await client.DeleteAsync(response.Headers.Location);
@@ -66,20 +51,14 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(0, returnParkingLots.Count);
         }
 
+        
 
         [Fact]
         public async Task Should_return_parking_lots_from_system_successfully_given_index()
         {
             // given
             var client = GetClient();
-            ParkingLotDto parkingLotDto = new ParkingLotDto
-            {
-                Name = "park1",
-                Capacity = 10,
-                Location = "Chaoyang",
-            };
-            StringContent postBody = SerializeContent(parkingLotDto);
-            await client.PostAsync("/parkingLots", postBody);
+            await AddAparkingLotToDb(client);
 
             // when
             var ParkingLotsResponseIndex1 = await client.GetAsync("/parkingLots?pageIndex=1");
@@ -97,14 +76,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            ParkingLotDto parkingLotDto = new ParkingLotDto
-            {
-                Name = "park1",
-                Capacity = 10,
-                Location = "Chaoyang",
-            };
-            StringContent postBody = SerializeContent(parkingLotDto);
-            var response = await client.PostAsync("/parkingLots", postBody);
+            var response = await AddAparkingLotToDb(client);
 
             // when
             var ParkingLotResponse = await client.GetAsync(response.Headers.Location);
@@ -135,6 +107,19 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             Assert.Equal(100, returnParkingLot.Capacity);
+        }
+
+        private static async Task<HttpResponseMessage> AddAparkingLotToDb(HttpClient client)
+        {
+            ParkingLotDto parkingLotDto = new ParkingLotDto
+            {
+                Name = "park1",
+                Capacity = 10,
+                Location = "Chaoyang",
+            };
+            StringContent postBody = SerializeContent(parkingLotDto);
+            var response = await client.PostAsync("/parkingLots", postBody);
+            return response;
         }
 
         private static async Task<T> DeserializeContent<T>(HttpResponseMessage response)
