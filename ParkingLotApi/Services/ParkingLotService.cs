@@ -3,6 +3,7 @@ using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
 using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -71,6 +72,12 @@ namespace ParkingLotApi.Services
     public async Task<ParkingLotDto> UpdateCapacity(int id, ParkingLotDto newParkingLotDto)
     {
       var parkingLot = FindParkingLotEntityById(id);
+
+      if (newParkingLotDto.Capacity < parkingLot.Capacity)
+      {
+        throw new InvalidParkingLotCapacityException($"New capacity must not be smaller than the original, which is {parkingLot.Capacity}.", HttpStatusCode.Conflict);
+      }
+
       parkingLot.Capacity = newParkingLotDto.Capacity;
       parkingLotDbContext.ParkingLots.Update(parkingLot);
       await parkingLotDbContext.SaveChangesAsync();
