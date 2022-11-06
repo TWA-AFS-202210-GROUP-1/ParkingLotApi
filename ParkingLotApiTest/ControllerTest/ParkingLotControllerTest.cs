@@ -24,7 +24,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            //then
+            //when
             await AddAparkingLotToDb(client, TestData.ParkingLotDtos[0]);
 
             // then

@@ -35,6 +35,16 @@ namespace ParkingLotApi.Service
             }
         }
 
+        public async Task<ParkingOrderDto> UpdateParkingOrderStatus(int id, ParkingOrderDto parkingOrderDto)
+        {
+            var targetOrder = this.parkingLotContext.ParkingOrders.FirstOrDefault(parkingOrder => parkingOrder.Id == id);
+            targetOrder.OrderStatus = parkingOrderDto.OrderStatus;
+            targetOrder.CloseTime = parkingOrderDto.CloseTime;
+            this.parkingLotContext.ParkingOrders.Update(targetOrder);
+            await this.parkingLotContext.SaveChangesAsync();
+            return new ParkingOrderDto(targetOrder);
+        }
+
         private bool isAvailable(ParkingLotEntity parkingLotEntity)
         {
             return parkingLotEntity.ParkingOrders.Where(parkingOrderEntity => parkingOrderEntity.OrderStatus == true).Count()<parkingLotEntity.Capacity;

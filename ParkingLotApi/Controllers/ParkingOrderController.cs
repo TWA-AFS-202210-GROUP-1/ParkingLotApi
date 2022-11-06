@@ -25,4 +25,11 @@ public class ParkingOrderController : ControllerBase
         return Created($"/parkingOrders/{id}", id);
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ParkingOrderDto>> updateParkingOrderByIdAsync([FromRoute] int id, [FromBody] ParkingOrderDto parkingOrderDto)
+    {
+        var UpdatedParkingOrder = await this.parkingOrderService.UpdateParkingOrderStatus(id, parkingOrderDto);
+        return Ok(UpdatedParkingOrder);
+    }
+
 }
