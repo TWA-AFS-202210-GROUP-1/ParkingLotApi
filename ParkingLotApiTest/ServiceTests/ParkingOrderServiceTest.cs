@@ -1,15 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ParkingLotApi.Dtos;
-using ParkingLotApi.Exceptions;
-using ParkingLotApi.Repository;
+﻿using ParkingLotApi.Exceptions;
 using ParkingLotApi.Services;
 using ParkingLotApiTest.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ParkingLotApiTest.ServiceTests
 {

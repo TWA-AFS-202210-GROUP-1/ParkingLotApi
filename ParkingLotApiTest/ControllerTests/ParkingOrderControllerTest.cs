@@ -1,15 +1,6 @@
-using System.Threading.Tasks;
-using ParkingLotApi;
-using Xunit;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
 using ParkingLotApiTest.Services;
 using System.Net;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
-using System.Collections.Generic;
 using ParkingLotApi.Models;
 using System;
 
@@ -32,7 +23,6 @@ namespace ParkingLotApiTest.ControllerTest
 
       var parkingOrderDtos = TestService.PrepareParkingOrderDtos();
       var orderRequestBody = TestService.SerializeDto(parkingOrderDtos[0]);
-      await httpClient.PostAsync("/orders", orderRequestBody);
 
       // when
       var response = await httpClient.PostAsync("/orders", orderRequestBody);
