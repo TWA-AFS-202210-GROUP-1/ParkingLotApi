@@ -32,13 +32,19 @@ namespace ParkingLotApi.Service
             await this.parkingLotContext.SaveChangesAsync();
         }
 
-        public List<ParkingLotDto> GetAll()
+        public async Task<List<ParkingLotDto>> GetAll()
         {
             var parkingLots = this.parkingLotContext.ParkingLots.ToList();
             return parkingLots.Select(parkingLot => new ParkingLotDto(parkingLot)).ToList();
         }
 
-        public List<ParkingLotDto> GetByPageIndex(int? pageIndex)
+        public async Task<ParkingLotDto> GetById(int id)
+        {
+            var targetParkingLot = this.parkingLotContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+            return new ParkingLotDto(targetParkingLot);
+        }
+
+        public async Task<List<ParkingLotDto>> GetByPageIndex(int? pageIndex)
         {
             var parkingLotsDtos = this.parkingLotContext.ParkingLots.ToList().Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity));
             return parkingLotsDtos.Skip((pageIndex.Value - 1) * pageSize).Take(pageSize).ToList();

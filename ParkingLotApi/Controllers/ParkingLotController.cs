@@ -21,13 +21,13 @@ public class ParkingLotController : ControllerBase
     {
         if(pageIndex == null)
         {
-            var parkingLotsDtos = this.parkingLotService.GetAll();
+            var parkingLotsDtos = await this.parkingLotService.GetAll();
 
             return Ok(parkingLotsDtos);
         }
         else
         {
-            var parkingLotsDtos = this.parkingLotService.GetByPageIndex(pageIndex);
+            var parkingLotsDtos = await this.parkingLotService.GetByPageIndex(pageIndex);
             return Ok(parkingLotsDtos);
         }
         
@@ -47,5 +47,12 @@ public class ParkingLotController : ControllerBase
         await this.parkingLotService.deleteParkingLot(id);
 
         return this.NoContent();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ParkingLotDto>> GetById(int id)
+    {
+        var companyDto = await this.parkingLotService.GetById(id);
+        return Ok(companyDto);
     }
 }
