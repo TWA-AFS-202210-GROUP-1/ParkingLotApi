@@ -1,8 +1,10 @@
-﻿using ParkingLotApi.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using ParkingLotApi.Dtos;
 using ParkingLotApi.Exceptions;
 using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -20,7 +22,9 @@ namespace ParkingLotApi.Services
 
     public async Task<int> CreateOrder(ParkingOrderDto parkingOrderDto)
     {
-      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLot);
+      var parkingLot = parkingLotDbContext.ParkingLots
+        .Include(parkingLot => parkingLot.ParkingOrders)
+        .FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLot);
       if (parkingLot != null)
       {
         if (!IsAvailable(parkingLot))
@@ -59,11 +63,19 @@ namespace ParkingLotApi.Services
       return new ParkingOrderDto(parkingOrder);
     }
 
-    private bool IsAvailable(ParkingLotEntity parkingLot)
+    private static bool IsAvailable(ParkingLotEntity parkingLot)
     {
-      var openOrderCount = parkingLot.ParkingOrders.FindAll(parkingOrder => parkingOrder.Status == OrderStatus.Open).Count;
+      if (parkingLot.ParkingOrders != null)
+      {
+        var openOrderCount = parkingLot.ParkingOrders.FindAll(parkingOrder => parkingOrder.Status == OrderStatus.Open).Count;
 
-      return openOrderCount < parkingLot.Capacity;
+        return openOrderCount < parkingLot.Capacity;
+      }
+      else
+      {
+        parkingLot.ParkingOrders = new List<ParkingOrderEntity>();
+        return true;
+      }
     }
   }
 }

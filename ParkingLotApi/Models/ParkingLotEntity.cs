@@ -12,6 +12,6 @@ namespace ParkingLotApi.Models
 
     public string Location { get; set; } = string.Empty;
 
-    public List<ParkingOrderEntity> ParkingOrders { get; set; } = new List<ParkingOrderEntity>();
+    public List<ParkingOrderEntity>? ParkingOrders { get; set; }
   }
 }

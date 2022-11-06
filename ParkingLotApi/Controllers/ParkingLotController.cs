@@ -26,7 +26,7 @@ namespace ParkingLotApi.Controllers
 
         return Created("/parking-lots", id);
       }
-      catch (ParkingLotApiExceptionBase exception)
+      catch (DuplicateParkingLotNameException exception)
       {
         return Conflict(exception.Message);
       }

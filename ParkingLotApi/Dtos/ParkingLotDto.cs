@@ -1,5 +1,6 @@
 ﻿using ParkingLotApi.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ParkingLotApi.Dtos
 {
@@ -21,6 +22,9 @@ namespace ParkingLotApi.Dtos
       Name = parkingLotEntity.Name;
       Capacity = parkingLotEntity.Capacity;
       Location = parkingLotEntity.Location;
+      ParkingOrderDtos = parkingLotEntity.ParkingOrders?
+        .Select(parkingOrder => new ParkingOrderDto(parkingOrder))
+        .ToList();
     }
 
     public string Name { get; set; } = string.Empty;
@@ -29,6 +33,8 @@ namespace ParkingLotApi.Dtos
 
     public string Location { get; set; } = string.Empty;
 
+    public List<ParkingOrderDto>? ParkingOrderDtos { get; set; }
+
     public ParkingLotEntity ToEntity()
     {
       return new ParkingLotEntity
@@ -36,6 +42,9 @@ namespace ParkingLotApi.Dtos
         Name = Name,
         Capacity = Capacity,
         Location = Location,
+        ParkingOrders = ParkingOrderDtos?
+        .Select(parkingOrderDto => parkingOrderDto.ToEntity())
+        .ToList(),
       };
     }
 
