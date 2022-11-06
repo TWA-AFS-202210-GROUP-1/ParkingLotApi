@@ -90,6 +90,20 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(4, targetParkingLots.Count());
         }
 
+        [Fact]
+        public async Task Should_update_a_parkingLot_Capacity_by_Id_success_via_parkingLot_service()
+        {
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[1]);
+            TestData.ParkingLotDtos[1].Capacity = 30;
+            //when
+            var targetParkingLot = await parkingLotService.UpdateParkingLotCapacity(id, TestData.ParkingLotDtos[1]);
+            //then
+            Assert.Equal(30, targetParkingLot.Capacity);
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();
