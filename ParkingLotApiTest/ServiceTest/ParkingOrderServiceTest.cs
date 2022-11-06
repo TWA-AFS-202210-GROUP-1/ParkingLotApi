@@ -49,40 +49,30 @@ namespace ParkingLotApiTest.ControllerTest
             IParkingOrderService parkingOrderService = new ParkingOrderService(context);
             // when
             await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[1]);
-            var err = async() => await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[1]);
+            var err = async() => await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[2]);
             var res = await Assert.ThrowsAsync<Exception>(err);
 
             // then
             Assert.Equal("The parking lot is full", res.Message);
         }
 
-        //[Fact]
-        //public async Task Should_get_parkingLot_byId_success_via_parkingLot_service()
-        //{
-        //    // given
-        //    var context = GetParkingLotDbContext();
-        //    IParkingLotService parkingLotService = new ParkingLotService(context);
-        //    var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
-        //    // when
-        //    var targetParkingLotDto = await parkingLotService.GetById(id);
 
-        //    // then
-        //    Assert.Equal("park1", targetParkingLotDto.Name);
-        //}
-
-        //[Fact]
-        //public async Task Should_update_a_parkingLot_Capacity_by_Id_success_via_parkingLot_service()
-        //{
-        //    // given
-        //    var context = GetParkingLotDbContext();
-        //    IParkingLotService parkingLotService = new ParkingLotService(context);
-        //    var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[1]);
-        //    TestData.ParkingLotDtos[1].Capacity = 30;
-        //    //when
-        //    var targetParkingLot = await parkingLotService.UpdateParkingLotCapacity(id, TestData.ParkingLotDtos[1]);
-        //    //then
-        //    Assert.Equal(30, targetParkingLot.Capacity);
-        //}
+        [Fact]
+        public async Task Should_update_a_parkingOrder_Status_by_Id_success_via_parkingOrder_service()
+        {
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            var id = await parkingLotService.AddParkingLot(TestData.ParkingLotDtos[0]);
+            IParkingOrderService parkingOrderService = new ParkingOrderService(context);
+            await parkingOrderService.AddParkingOrder(TestData.ParkingOrderDtos[0]);
+            TestData.ParkingOrderDtos[0].OrderStatus = false;
+            TestData.ParkingOrderDtos[0].CloseTime = DateTime.Now;
+            //when
+            var targetParkingOrder = await parkingOrderService.UpdateParkingOrderStatus(id, TestData.ParkingOrderDtos[0]);
+            //then
+            Assert.Equal(false, targetParkingOrder.OrderStatus);
+        }
 
         private ParkingLotContext GetParkingLotDbContext()
         {
