@@ -24,6 +24,13 @@ namespace ParkingLotApi.Service
             return parkingLotEntity.Id;
         }
 
+        public async Task deleteParkingLot(int id)
+        {
+            var targetParkingLot = this.parkingLotContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
+            parkingLotContext.Remove(targetParkingLot);
+            await this.parkingLotContext.SaveChangesAsync();
+        }
+
         public async Task<List<ParkingLotDto>> GetAll()
         {
             var parkingLots = this.parkingLotContext.ParkingLots.ToList();

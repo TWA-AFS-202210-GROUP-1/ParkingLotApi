@@ -8,5 +8,6 @@ namespace ParkingLotApi.Service
     {
         Task<List<ParkingLotDto>> GetAll();
         Task<int> AddParkingLot(ParkingLotDto parkingLotDto);
+        Task deleteParkingLot(int id);
     }
 }

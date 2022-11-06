@@ -31,4 +31,12 @@ public class ParkingLotController : ControllerBase
 
         return Created($"/parkinglots/{id}", id);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteParkingLotById(int id)
+    {
+        await this.parkingLotService.deleteParkingLot(id);
+
+        return this.NoContent();
+    }
 }

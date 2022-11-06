@@ -32,16 +32,52 @@ namespace ParkingLotApiTest.ControllerTest
             };
 
             // when
-            var httpContent = JsonConvert.SerializeObject(companyDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PostAsync("/parkingLots", content);
+            StringContent postBody = SerializeContent(companyDto);
+            await client.PostAsync("/parkingLots", postBody);
 
             // then
             var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+            var returnParkingLots = await DeserializeContent<List<ParkingLotDto>>(allParkingLotsResponse);
 
-            Assert.Single(returnParkingLots);
+            Assert.Equal(1, returnParkingLots.Count);
+        }
+
+        [Fact]
+        public async Task Should_delete_parking_lot_from_system_successfully()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto companyDto = new ParkingLotDto
+            {
+                Name = "park1",
+                Capacity = 10,
+                Location = "Chaoyang",
+            };
+            StringContent postBody = SerializeContent(companyDto);
+            var response  = await client.PostAsync("/parkingLots", postBody);
+
+            // when
+            await client.DeleteAsync(response.Headers.Location);
+
+            // then
+            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
+            var returnParkingLots = await DeserializeContent<List<ParkingLotDto>>(allParkingLotsResponse);
+
+            Assert.Equal(0, returnParkingLots.Count);
+        }
+
+        private static async Task<T> DeserializeContent<T>(HttpResponseMessage response)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var res = JsonConvert.DeserializeObject<T>(responseBody);
+            return res;
+        }
+
+        private static StringContent SerializeContent<T>(T target)
+        {
+            var targetJson = JsonConvert.SerializeObject(target);
+            var postBody = new StringContent(targetJson, Encoding.UTF8, mediaType: "application/json");
+            return postBody;
         }
     }
 }
