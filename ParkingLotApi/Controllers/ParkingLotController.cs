@@ -38,7 +38,7 @@ public class ParkingLotController : ControllerBase
     {
         var id = await this.parkingLotService.AddParkingLot(parkingLotDto);
 
-        return Created($"/parkinglots/{id}", id);
+        return Created($"/parkingLots/{id}", id);
     }
 
     [HttpDelete("{id}")]
