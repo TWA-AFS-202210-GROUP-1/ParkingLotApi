@@ -25,7 +25,7 @@ namespace ParkingLotApi.Services
       {
         if (!IsAvailable(parkingLot))
         {
-          throw new ParkingLotFullException("The parking lot is full", HttpStatusCode.Conflict);
+          throw new ParkingLotFullException("The parking lot is full.", HttpStatusCode.Conflict);
         }
 
         var parkingOrderEntity = parkingOrderDto.ToEntity();

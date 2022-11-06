@@ -32,6 +32,7 @@ namespace ParkingLotApiTest.ControllerTest
 
       var parkingOrderDtos = TestService.PrepareParkingOrderDtos();
       var orderRequestBody = TestService.SerializeDto(parkingOrderDtos[0]);
+      await httpClient.PostAsync("/orders", orderRequestBody);
 
       // when
       var response = await httpClient.PostAsync("/orders", orderRequestBody);

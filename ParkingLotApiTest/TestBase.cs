@@ -30,5 +30,12 @@ namespace ParkingLotApiTest
     {
       return Factory.CreateClient();
     }
+
+    protected ParkingLotDbContext GetParkingLotDbContext()
+    {
+      var scope = Factory.Services.CreateScope();
+      var scopedService = scope.ServiceProvider;
+      return scopedService.GetRequiredService<ParkingLotDbContext>();
+    }
   }
 }

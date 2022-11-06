@@ -36,7 +36,6 @@ namespace ParkingLotApi.Dtos
         Name = Name,
         Capacity = Capacity,
         Location = Location,
-        ParkingOrders = new List<ParkingOrderEntity>(),
       };
     }
 

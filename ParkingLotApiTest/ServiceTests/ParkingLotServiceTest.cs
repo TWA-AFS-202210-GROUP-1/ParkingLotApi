@@ -53,12 +53,5 @@ namespace ParkingLotApiTest.ServiceTests
       Assert.Equal($"Parking lot name: {parkingLotDtos[0].Name} already exists.", exception.Message);
       Assert.Equal(HttpStatusCode.Conflict, exception.StatusCode);
     }
-
-    private ParkingLotDbContext GetParkingLotDbContext()
-    {
-      var scope = Factory.Services.CreateScope();
-      var scopedService = scope.ServiceProvider;
-      return scopedService.GetRequiredService<ParkingLotDbContext>();
-    }
   }
 }

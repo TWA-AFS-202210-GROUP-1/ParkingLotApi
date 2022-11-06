@@ -30,6 +30,10 @@ namespace ParkingLotApi.Controllers
       {
         return NotFound(exception.Message);
       }
+      catch (ParkingLotFullException exception)
+      {
+        return Conflict(exception.Message);
+      }
     }
 
     [HttpGet("{orderId}")]
