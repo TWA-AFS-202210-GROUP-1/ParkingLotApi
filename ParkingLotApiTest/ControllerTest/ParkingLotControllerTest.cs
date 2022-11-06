@@ -24,33 +24,18 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should__create_a_parking_lot_when_call_post_given_parking_lot_infromation()
+        public async Task Should_create_a_parking_lot_when_call_post_given_parking_lot_infromation()
         {
             // given
             var client = GetClient();
-            var createParkingLotResponse = await PrepareNewData(client);
-            var createParkingLotResponseBody = await createParkingLotResponse.Content.ReadAsStringAsync();
-            //string parkingLotName = "NO.new";
-            //int parkingLotCapacity = 50;
-            //string parkingLotLocation = "somewhere new";
-            //ParkingLotDto parkingLotDto = new ParkingLotDto()
-            //{
-            //    ParkingLotName = parkingLotName,
-            //    ParkingLotCapacity = parkingLotCapacity,
-            //    ParkingLotLocation = parkingLotLocation,
-            //};
-            //var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
-            //StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            //// when
-            //var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
+            // when
+            var createParkingLotResponse = await PrepareNewData(client);
+
+            // then
             var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
             var responseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
             var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
-
-
-
-            // then
             Assert.Equal(HttpStatusCode.Created, createParkingLotResponse.StatusCode);
             Assert.Equal("NO.New", returnParkingLotDto.ParkingLotName);
 
@@ -61,21 +46,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-
             var createParkingLotResponse = await PrepareNewData(client);
-            //// prepare data
-            //string parkingLotName = "NO.new";
-            //int parkingLotCapacity = 50;
-            //string parkingLotLocation = "somewhere new";
-            //ParkingLotDto parkingLotDto = new ParkingLotDto()
-            //{
-            //    ParkingLotName = parkingLotName,
-            //    ParkingLotCapacity = parkingLotCapacity,
-            //    ParkingLotLocation = parkingLotLocation,
-            //};
-            //var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
-            //StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            //var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
 
             // when
             var deleteParkingLotResponse = await client.DeleteAsync(createParkingLotResponse.Headers.Location);
@@ -179,7 +150,7 @@ namespace ParkingLotApiTest.ControllerTest
 
             // when
             HttpResponseMessage createOrderResponse = await newCar.Parking(client, createParkingLotResponse);
-            
+
             HttpResponseMessage updateOrderResponse =await newCar.Fetching(client, createParkingLotResponse);
 
             // then
@@ -189,7 +160,6 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.OK, createOrderResponse.StatusCode);
             Assert.Equal("Close", returnParkingLotDto.OrdersList.Find(orderDto => orderDto.CarPlateNumber.Equals("666")).OrderStatus); 
         }
-
 
         static async Task PrepareMultiData(HttpClient client)
         {

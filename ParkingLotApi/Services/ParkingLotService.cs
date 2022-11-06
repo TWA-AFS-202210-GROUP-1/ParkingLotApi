@@ -84,9 +84,6 @@ namespace ParkingLotApi.Services
 
                         parkingLotEntity.OrdersListEntity.Add(
                             parkingLotDto.OrdersList.Select(orderDto => orderDto.ToOrderEntity()).ToList()[0]);
-                        //parkingLotEntity.OrdersListEntity.Clear();
-                        //parkingLotEntity.OrdersListEntity.AddRange(parkingLotDto.OrdersList
-                        //    .Select(orderDto => orderDto.ToOrderEntity()).ToList());
                         _parkingLotDbContext.SaveChanges();
                         return new ParkingLotDto(parkingLotEntity);
                     }

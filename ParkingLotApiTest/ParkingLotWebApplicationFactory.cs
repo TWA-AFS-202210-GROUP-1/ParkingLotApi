@@ -15,25 +15,6 @@ namespace ParkingLotApiTest
         {
             builder.ConfigureServices(services =>
             {
-                //var descriptor = services.SingleOrDefault(
-                //    d => d.ServiceType ==
-                //         typeof(DbContextOptions<ParkingLotContext>));
-
-                //services.Remove(descriptor);
-
-                //services.AddDbContext<ParkingLotContext>(options =>
-                //{
-                //    options.UseInMemoryDatabase("InMemoryDbForTesting");
-                //});
-
-                //var sp = services.BuildServiceProvider();
-
-                //using (var scope = sp.CreateScope())
-                //{
-                //    var scopedServices = scope.ServiceProvider;
-                //    var db = scopedServices.GetRequiredService<ParkingLotContext>();
-                //    db.Database.EnsureCreated();
-                //}
             });
         }
     }

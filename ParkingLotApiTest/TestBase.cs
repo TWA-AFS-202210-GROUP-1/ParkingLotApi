@@ -20,13 +20,8 @@ public class TestBase : IClassFixture<ParkingLotWebApplicationFactory<Program>>,
         var scope = Factory.Services.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<ParkingLotContext>();
-
-        //context.ParkingLots.RemoveRange(context.Orders);
-        //context.ParkingLots.RemoveRange(context.ParkingLots);
         context.ParkingLots.RemoveRange(context.ParkingLots);
         context.Orders.RemoveRange(context.Orders);
-        //context.RemoveRange(context);
-
         context.SaveChanges();
     }
 
