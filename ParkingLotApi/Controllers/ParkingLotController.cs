@@ -19,7 +19,7 @@ public class ParkingLotController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<ParkingLotDto>>> GetAllParkingLots([FromQuery] int? pageIndex)
     {
-        if(pageIndex == null)
+        if (pageIndex == null)
         {
             var parkingLotsDtos = await this.parkingLotService.GetAll();
 
@@ -30,7 +30,7 @@ public class ParkingLotController : ControllerBase
             var parkingLotsDtos = await this.parkingLotService.GetByPageIndex(pageIndex);
             return Ok(parkingLotsDtos);
         }
-        
+
     }
 
     [HttpPost]
@@ -54,5 +54,12 @@ public class ParkingLotController : ControllerBase
     {
         var companyDto = await this.parkingLotService.GetById(id);
         return Ok(companyDto);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ParkingLotDto>> updateParkingLotByIDAsync([FromRoute] int id, [FromBody] ParkingLotDto parkingLotDto)
+    {
+        var UpdatedParkingLot = await this.parkingLotService.UpdateParkingLotCapacity(id, parkingLotDto);
+        return Ok(UpdatedParkingLot);
     }
 }

@@ -11,5 +11,6 @@ namespace ParkingLotApi.Service
         Task deleteParkingLot(int id);
         Task<List<ParkingLotDto>> GetByPageIndex(int? pageIndex);
         Task<ParkingLotDto> GetById(int id);
+        Task<ParkingLotDto> UpdateParkingLotCapacity(int id, ParkingLotDto parkingLotDto);
     }
 }
