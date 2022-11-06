@@ -1,14 +1,6 @@
-using System.Threading.Tasks;
-using ParkingLotApi;
-using Xunit;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using ParkingLotApi.Dtos;
 using ParkingLotApiTest.Services;
 using System.Net;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
 using System.Collections.Generic;
 
 namespace ParkingLotApiTest.ControllerTest

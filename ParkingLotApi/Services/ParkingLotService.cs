@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ParkingLotApi.Dtos;
+﻿using ParkingLotApi.Dtos;
+using ParkingLotApi.Exceptions;
 using ParkingLotApi.Repository;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ParkingLotApi.Services
@@ -19,6 +20,11 @@ namespace ParkingLotApi.Services
 
     public async Task<int> AddParkingLot(ParkingLotDto parkingLotDto)
     {
+      if (HasParkingLot(parkingLotDto))
+      {
+        throw new DuplicateParkingLotNameException($"Parking lot name: {parkingLotDto.Name} already exists.", HttpStatusCode.Conflict);
+      }
+
       var parkingLotEntity = parkingLotDto.ToEntity();
       await parkingLotDbContext.ParkingLots.AddAsync(parkingLotEntity);
       await parkingLotDbContext.SaveChangesAsync();
@@ -68,6 +74,13 @@ namespace ParkingLotApi.Services
       var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Id == id);
       parkingLotDbContext.ParkingLots.Remove(parkingLot);
       await parkingLotDbContext.SaveChangesAsync();
+    }
+
+    private bool HasParkingLot(ParkingLotDto parkingLotDto)
+    {
+      var existingParkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name.Equals(parkingLotDto.Name));
+
+      return existingParkingLot != null;
     }
   }
 }

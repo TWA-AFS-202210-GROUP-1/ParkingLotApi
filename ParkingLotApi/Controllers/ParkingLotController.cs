@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
-using ParkingLotApi.Models;
-using ParkingLotApi.Repository;
+using ParkingLotApi.Exceptions;
 using ParkingLotApi.Services;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ParkingLotApi.Controllers
 {
@@ -22,9 +20,16 @@ namespace ParkingLotApi.Controllers
     [HttpPost]
     public async Task<IActionResult> AddParkingLot(ParkingLotDto parkingLotDto)
     {
-      var id = await parkingLotService.AddParkingLot(parkingLotDto);
+      try
+      {
+        var id = await parkingLotService.AddParkingLot(parkingLotDto);
 
-      return Created("/parking-lots", id);
+        return Created("/parking-lots", id);
+      }
+      catch (DuplicateParkingLotNameException exception)
+      {
+        return Conflict(exception.Message);
+      }
     }
 
     [HttpGet]

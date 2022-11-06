@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
-using ParkingLotApi.Models;
-using ParkingLotApi.Repository;
 using ParkingLotApi.Services;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ParkingLotApi.Controllers
 {
