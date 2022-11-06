@@ -77,6 +77,19 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(0, context.ParkingLots.Count());
         }
 
+        [Fact]
+        public async Task Should_get_parkingLots_by_pageIndex_success_via_parkingLot_service()
+        {
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            TestData.ParkingLotDtos.ForEach(async parkingLotDto => await parkingLotService.AddParkingLot(parkingLotDto));
+            //when
+            var targetParkingLots = await parkingLotService.GetByPageIndex(1);
+            //then
+            Assert.Equal(4, targetParkingLots.Count());
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();
