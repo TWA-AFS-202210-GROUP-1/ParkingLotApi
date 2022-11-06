@@ -26,28 +26,29 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
+            var createParkingLotResponse = await PrepareNewData(client);
+            var createParkingLotResponseBody = await createParkingLotResponse.Content.ReadAsStringAsync();
+            //string parkingLotName = "NO.new";
+            //int parkingLotCapacity = 50;
+            //string parkingLotLocation = "somewhere new";
+            //ParkingLotDto parkingLotDto = new ParkingLotDto()
+            //{
+            //    ParkingLotName = parkingLotName,
+            //    ParkingLotCapacity = parkingLotCapacity,
+            //    ParkingLotLocation = parkingLotLocation,
+            //};
+            //var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
+            //StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            string parkingLotName = "NO.new";
-            int parkingLotCapacity = 50;
-            string parkingLotLocation = "somewhere new";
-            ParkingLotDto parkingLotDto = new ParkingLotDto()
-            {
-                ParkingLotName = parkingLotName,
-                ParkingLotCapacity = parkingLotCapacity,
-                ParkingLotLocation = parkingLotLocation,
-            };
-            var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
-            StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-
-            // when
-            var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
-            var allParkingLotsResponse = await client.GetAsync("/parkingLots");
-            var responseBody = await allParkingLotsResponse.Content.ReadAsStringAsync();
-            var returnParkingLotDtoList = JsonConvert.DeserializeObject<List<ParkingLotDto>>(responseBody);
+            //// when
+            //var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
+            var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
+            var responseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
 
             // then
             Assert.Equal(HttpStatusCode.Created, createParkingLotResponse.StatusCode);
-            returnParkingLotDtoList.Find(x => x.ParkingLotName.Equals(parkingLotName)).ShouldDeepEqual(parkingLotDto);
+            Assert.Equal(createParkingLotResponseBody, responseBody);
+
         }
 
         [Fact]
@@ -56,19 +57,20 @@ namespace ParkingLotApiTest.ControllerTest
             // given
             var client = GetClient();
 
-            // prepare data
-            string parkingLotName = "NO.new";
-            int parkingLotCapacity = 50;
-            string parkingLotLocation = "somewhere new";
-            ParkingLotDto parkingLotDto = new ParkingLotDto()
-            {
-                ParkingLotName = parkingLotName,
-                ParkingLotCapacity = parkingLotCapacity,
-                ParkingLotLocation = parkingLotLocation,
-            };
-            var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
-            StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
+            var createParkingLotResponse = await PrepareNewData(client);
+            //// prepare data
+            //string parkingLotName = "NO.new";
+            //int parkingLotCapacity = 50;
+            //string parkingLotLocation = "somewhere new";
+            //ParkingLotDto parkingLotDto = new ParkingLotDto()
+            //{
+            //    ParkingLotName = parkingLotName,
+            //    ParkingLotCapacity = parkingLotCapacity,
+            //    ParkingLotLocation = parkingLotLocation,
+            //};
+            //var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
+            //StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            //var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
 
             // when
             var deleteParkingLotResponse = await client.DeleteAsync(createParkingLotResponse.Headers.Location);
@@ -84,7 +86,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             // given
             var client = GetClient();
-            await PrepareData(client);
+            await PrepareMultiData(client);
             int pageIndex = 2;
             int maxPageSize = 15;
 
@@ -98,7 +100,24 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(maxPageSize, returnParkingLotDtoList.Count);
         }
 
-        static async Task PrepareData(HttpClient client)
+        [Fact]
+        public async Task Should_return_one_parking_lot_loction_when_call_get_given_parking_lot_id()
+        {
+            // given
+            var client = GetClient();
+            var createParkingLotResponse = await PrepareNewData(client);
+
+            // when
+            var getParkingLotsByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
+            var responseBody = await getParkingLotsByIdResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, getParkingLotsByIdResponse.StatusCode);
+            Assert.Equal("Somewhere New", returnParkingLotDto.ParkingLotLocation);
+        }
+
+        static async Task PrepareMultiData(HttpClient client)
         {
             int dataNumberToprepare = 50;
             for (int i = 0; i < dataNumberToprepare; i++)
@@ -113,6 +132,22 @@ namespace ParkingLotApiTest.ControllerTest
                 StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
                 await client.PostAsync("/parkingLots", parkingLotContent);
             }
+        }
+
+        static async Task<HttpResponseMessage> PrepareNewData(HttpClient client)
+        {
+            string parkingLotName = "NO.New";
+            int parkingLotCapacity = 50;
+            string parkingLotLocation = "Somewhere New";
+            ParkingLotDto parkingLotDto = new ParkingLotDto()
+            {
+                ParkingLotName = parkingLotName,
+                ParkingLotCapacity = parkingLotCapacity,
+                ParkingLotLocation = parkingLotLocation,
+            };
+            var parkingLotHttpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent parkingLotContent = new StringContent(parkingLotHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            return await client.PostAsync("/parkingLots", parkingLotContent);
         }
     }
 }
