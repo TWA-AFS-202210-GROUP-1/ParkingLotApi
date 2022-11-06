@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
+using ParkingLotApi.Exceptions;
 using ParkingLotApi.Services;
 using System.Threading.Tasks;
 
@@ -19,9 +20,16 @@ namespace ParkingLotApi.Controllers
     [HttpPost]
     public async Task<IActionResult> CreateOrder(ParkingOrderDto parkingOrderDto)
     {
-      var id = await parkingOrderService.CreateOrder(parkingOrderDto);
+      try
+      {
+        var id = await parkingOrderService.CreateOrder(parkingOrderDto);
 
-      return Created("/orders", id);
+        return Created("/orders", id);
+      }
+      catch (ParkingLotNotFoundException exception)
+      {
+        return NotFound(exception.Message);
+      }
     }
 
     [HttpGet("{orderId}")]

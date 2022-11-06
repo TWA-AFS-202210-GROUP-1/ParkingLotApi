@@ -52,7 +52,7 @@ namespace ParkingLotApiTest
         },
         new ParkingOrderDto
         {
-          ParkingLot = "Drive On Park",
+          ParkingLot = "Mountain View Parking",
           PlateNumber = "AO24 HJF",
           CreationTime = DateTime.Now,
           CloseTime = DateTime.Now,
@@ -60,7 +60,7 @@ namespace ParkingLotApiTest
         },
         new ParkingOrderDto
         {
-          ParkingLot = "Parking Miles",
+          ParkingLot = "Drive On Park",
           PlateNumber = "KM14 POW",
           CreationTime = DateTime.Now,
           CloseTime = DateTime.Now,

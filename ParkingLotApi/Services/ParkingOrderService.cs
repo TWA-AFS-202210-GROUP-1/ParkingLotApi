@@ -1,6 +1,9 @@
 ﻿using ParkingLotApi.Dtos;
+using ParkingLotApi.Exceptions;
 using ParkingLotApi.Repository;
+using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ParkingLotApi.Services
@@ -16,11 +19,20 @@ namespace ParkingLotApi.Services
 
     public async Task<int> CreateOrder(ParkingOrderDto parkingOrderDto)
     {
-      var parkingOrderEntity = parkingOrderDto.ToEntity();
-      await parkingLotDbContext.ParkingOrders.AddAsync(parkingOrderEntity);
-      await parkingLotDbContext.SaveChangesAsync();
+      var parkingLot = parkingLotDbContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == parkingOrderDto.ParkingLot);
+      if (parkingLot != null)
+      {
+        var parkingOrderEntity = parkingOrderDto.ToEntity();
+        parkingLot.ParkingOrders.Add(parkingOrderEntity);
+        await parkingLotDbContext.ParkingOrders.AddAsync(parkingOrderEntity);
+        await parkingLotDbContext.SaveChangesAsync();
 
-      return parkingOrderEntity.Id;
+        return parkingOrderEntity.Id;
+      }
+      else
+      {
+        throw new ParkingLotNotFoundException($"Cannot find parking lot named {parkingOrderDto.ParkingLot}.", HttpStatusCode.NotFound);
+      }
     }
 
     public ParkingOrderDto GetById(int id)
@@ -34,6 +46,7 @@ namespace ParkingLotApi.Services
     {
       var parkingOrder = parkingLotDbContext.ParkingOrders.FirstOrDefault(parkingOrder => parkingOrder.Id == id);
       parkingOrder.Status = newParkingOrderDto.Status;
+      parkingOrder.CloseTime = newParkingOrderDto.CloseTime;
       parkingLotDbContext.ParkingOrders.Update(parkingOrder);
       await parkingLotDbContext.SaveChangesAsync();
 
