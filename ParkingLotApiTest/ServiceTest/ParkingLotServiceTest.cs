@@ -37,20 +37,21 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(1, context.ParkingLots.Count());
         }
 
-        //[Fact]
-        //public async Task Should_get_company_byId_success_via_company_service()
-        //{
-        //    // given
-        //    var context = GetCompanyDbContext();
-        //    CompanyService companyService = new CompanyService(context);
-        //    CompanyDto companyDto = PrepareAddCompanyDto();
-        //    var targetId = await companyService.AddCompany(companyDto);
-        //    // when
-        //    CompanyDto targetCompany = await companyService.GetById(targetId);
+        [Fact]
+        public async Task Should_get_parkingLot_byId_success_via_parkingLot_service()
+        {
+            // given
+            var context = GetParkingLotDbContext();
+            IParkingLotService parkingLotService = new ParkingLotService(context);
+            ParkingLotDto parkingLotDto = PrepareAddParkingLotDto();
+            // when
+            var id = await parkingLotService.AddParkingLot(parkingLotDto);
+            // when
+            var targetParkingLotDto = await parkingLotService.GetById(id);
 
-        //    // then
-        //    Assert.Equal("IBM", targetCompany.Name);
-        //}
+            // then
+            Assert.Equal("park1", targetParkingLotDto.Name);
+        }
 
         //[Fact]
         //public async Task Should_get_all_companies_success_via_company_service()
