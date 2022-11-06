@@ -44,5 +44,32 @@ namespace ParkingLotApiTest.ControllerTest
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             return await client.PatchAsync(createParkingLotResponse.Headers.Location, content);
         }
+
+        public async Task<HttpResponseMessage> Fetching(HttpClient client, HttpResponseMessage createOrderResponse)
+        {
+            var createOrderResponseBody = await createOrderResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(createOrderResponseBody);
+
+            ParkingLotDto newParkingLotDto = new ParkingLotDto()
+            {
+                ParkingLotName = returnParkingLotDto.ParkingLotName,
+                ParkingLotCapacity = returnParkingLotDto.ParkingLotCapacity,
+                ParkingLotLocation = returnParkingLotDto.ParkingLotLocation,
+                OrdersList = new List<OrderDto>()
+                {
+                    new OrderDto()
+                    {
+                        NameOfParkingLot = returnParkingLotDto.ParkingLotName,
+                        CarPlateNumber = this.carPlateNumber,
+                        CreateTime = String.Empty,
+                        CloseTime = DateTime.Now.ToString(),
+                        OrderStatus = "Close",
+                    },
+                },
+            };
+            var newHttpContent = JsonConvert.SerializeObject(newParkingLotDto);
+            StringContent newContent = new StringContent(newHttpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            return await client.PatchAsync(createOrderResponse.Headers.Location, newContent);
+        }
     }
 }

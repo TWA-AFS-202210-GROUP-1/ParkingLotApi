@@ -71,14 +71,38 @@ namespace ParkingLotApi.Services
                 .FirstOrDefaultAsync(parkingLot => parkingLot.ParkingLotId.Equals(parkingLotId));
             if (parkingLotEntity != null)
             {
-                parkingLotEntity.ParkingLotCapacity = parkingLotDto.ParkingLotCapacity;
-                parkingLotEntity.OrdersListEntity.Clear();
-                parkingLotEntity.OrdersListEntity.AddRange(parkingLotDto.OrdersList
-                    .Select(orderDto => orderDto.ToOrderEntity()).ToList());
-                //parkingLotEntity.OrdersListEntity = parkingLotDto.OrdersList
-                //    .Select(orderDto => orderDto.ToOrderEntity()).ToList();
-                _parkingLotDbContext.SaveChanges();
-                return new ParkingLotDto(parkingLotEntity);
+                if (parkingLotEntity.ParkingLotCapacity != parkingLotDto.ParkingLotCapacity)
+                {
+                    parkingLotEntity.ParkingLotCapacity = parkingLotDto.ParkingLotCapacity;
+                    return new ParkingLotDto(parkingLotEntity);
+                }
+                int parkingCarNumber = parkingLotEntity.OrdersListEntity.Select(orderEntity => orderEntity.OrderStatus.Equals("Open")).ToList().Count();
+                if ((parkingLotEntity.ParkingLotCapacity - parkingCarNumber) > 0)
+                {
+                    if (string.IsNullOrEmpty(parkingLotDto.OrdersList[0].CloseTime))
+                    {
+
+                        parkingLotEntity.OrdersListEntity.Add(
+                            parkingLotDto.OrdersList.Select(orderDto => orderDto.ToOrderEntity()).ToList()[0]);
+                        //parkingLotEntity.OrdersListEntity.Clear();
+                        //parkingLotEntity.OrdersListEntity.AddRange(parkingLotDto.OrdersList
+                        //    .Select(orderDto => orderDto.ToOrderEntity()).ToList());
+                        _parkingLotDbContext.SaveChanges();
+                        return new ParkingLotDto(parkingLotEntity);
+                    }
+                    else
+                    {
+                        var orderEntity = parkingLotEntity.OrdersListEntity.Find(orderEntity => orderEntity.CarPlateNumber.Equals(parkingLotDto.OrdersList[0].CarPlateNumber));
+                        orderEntity.CloseTime = parkingLotDto.OrdersList[0].CloseTime;
+                        orderEntity.OrderStatus = parkingLotDto.OrdersList[0].OrderStatus;
+                        _parkingLotDbContext.SaveChanges();
+                        return new ParkingLotDto(parkingLotEntity);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("The parking lot is full");
+                }
             }
             else
             {

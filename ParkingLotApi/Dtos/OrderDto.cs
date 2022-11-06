@@ -9,7 +9,7 @@ namespace ParkingLotApi.Dtos
         public OrderDto(Order orderEntity)
         {
             NameOfParkingLot = orderEntity.NameOfParkingLot;
-            CarPlateNumber = orderEntity.carPlateNumber;
+            CarPlateNumber = orderEntity.CarPlateNumber;
             CreateTime = orderEntity.CreateTime;
             CloseTime = orderEntity.CloseTime;
             OrderStatus = orderEntity.OrderStatus;
@@ -30,7 +30,7 @@ namespace ParkingLotApi.Dtos
             return new Order()
             {
                 NameOfParkingLot = this.NameOfParkingLot,
-                carPlateNumber = this.CarPlateNumber,
+                CarPlateNumber = this.CarPlateNumber,
                 CreateTime = this.CreateTime,
                 CloseTime = this.CloseTime,
                 OrderStatus = this.OrderStatus,

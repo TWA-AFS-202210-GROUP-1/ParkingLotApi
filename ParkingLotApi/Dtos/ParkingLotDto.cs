@@ -12,7 +12,7 @@ namespace ParkingLotApi.Dtos
             this.ParkingLotName = parkingLotEntity.ParkingLotName;
             this.ParkingLotCapacity = parkingLotEntity.ParkingLotCapacity;
             this.ParkingLotLocation = parkingLotEntity.ParkingLotLocation;
-            this.OrdersList = parkingLotEntity.OrdersListEntity.Select(orderEntity => new OrderDto(orderEntity)).ToList();
+            this.OrdersList = parkingLotEntity.OrdersListEntity != null ? parkingLotEntity.OrdersListEntity.Select(orderEntity => new OrderDto(orderEntity)).ToList() : null;
         }
 
         public ParkingLotDto()

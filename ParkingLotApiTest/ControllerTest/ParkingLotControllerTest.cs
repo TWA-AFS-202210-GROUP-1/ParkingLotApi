@@ -46,10 +46,13 @@ namespace ParkingLotApiTest.ControllerTest
             //var createParkingLotResponse = await client.PostAsync("/parkingLots", parkingLotContent);
             var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
             var responseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+
+
 
             // then
             Assert.Equal(HttpStatusCode.Created, createParkingLotResponse.StatusCode);
-            Assert.Equal(createParkingLotResponseBody, responseBody);
+            Assert.Equal("NO.New", returnParkingLotDto.ParkingLotName);
 
         }
 
@@ -148,7 +151,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_create_one_order_capacity_when_car_in_given_car_plate_and_time()
+        public async Task Should_create_one_order_when_car_in_given_car_plate_and_time()
         {
             // given
             var client = GetClient();
@@ -157,13 +160,34 @@ namespace ParkingLotApiTest.ControllerTest
 
             // when
             HttpResponseMessage createOrderResponse = await newCar.Parking(client, createParkingLotResponse);
-            var createOrderResponseBody = await createOrderResponse.Content.ReadAsStringAsync();
+
             // then
             var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
             var getParkingLotByIdResponseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(getParkingLotByIdResponseBody);
             Assert.Equal(HttpStatusCode.OK, createOrderResponse.StatusCode);
-            Assert.Equal(createOrderResponseBody, getParkingLotByIdResponseBody);
+            Assert.NotEmpty(returnParkingLotDto.OrdersList.Find(orderDto => orderDto.CarPlateNumber.Equals("666")).CreateTime);
+        }
 
+        [Fact]
+        public async Task Should_update_order_when_car_out()
+        {
+            // given
+            var client = GetClient();
+            var createParkingLotResponse = await PrepareNewData(client);
+            Car newCar = new Car(carPlateNumber: "666");
+
+            // when
+            HttpResponseMessage createOrderResponse = await newCar.Parking(client, createParkingLotResponse);
+            
+            HttpResponseMessage updateOrderResponse =await newCar.Fetching(client, createParkingLotResponse);
+
+            // then
+            var getParkingLotByIdResponse = await client.GetAsync(createParkingLotResponse.Headers.Location);
+            var getParkingLotByIdResponseBody = await getParkingLotByIdResponse.Content.ReadAsStringAsync();
+            var returnParkingLotDto = JsonConvert.DeserializeObject<ParkingLotDto>(getParkingLotByIdResponseBody);
+            Assert.Equal(HttpStatusCode.OK, createOrderResponse.StatusCode);
+            Assert.Equal("Close", returnParkingLotDto.OrdersList.Find(orderDto => orderDto.CarPlateNumber.Equals("666")).OrderStatus); 
         }
 
 
