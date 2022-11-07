@@ -31,7 +31,8 @@ namespace ParkingLotApi.Services
 
             var count = Enumerable.Count(
                 this.parkingLotContext.ParkingOrders,
-                parkingOrder => parkingOrder.ParkingLotName == parkingLotName);
+                parkingOrder => parkingOrder.ParkingLotName == parkingLotName 
+                                && parkingOrder.OrderStatus == Const.OrderStatus.Open);
 
             if (count < findParkingLot.Capacity)
             {
